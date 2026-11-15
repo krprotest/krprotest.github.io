@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>한국 우파 항의행동 트래커</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 좁은 상단 띠 + 탭, 본문은 좌측 필터 / 우측 목록. 색은 기록물(장부) 느낌의 차분한 청회색 + 적갈색 강조 */
+:root{
+  --bg:#f6f5f1; --panel:#ffffff; --fg:#1d2126; --muted:#5d6670; --line:#d9d6cd;
+  --accent:#8a3b2a; --accent-soft:#f1e3df; --chip:#e9ebe6; --head:#2a3440;
+  --mark:#3f6d8a;
+  --c1:#3f6d8a; --c2:#a5452f; --c3:#c08a2e; --c4:#6b3a5e; --c5:#8fa39a;
+  --sans:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15181c; --panel:#1e2228; --fg:#e8e6e0; --muted:#a3a9b1; --line:#353b43;
+  --accent:#d98a73; --accent-soft:#3a2721; --chip:#2a3038; --head:#0f1317; --mark:#7fb0cf; --c1:#7fb0cf; --c2:#d98a73; --c3:#e0b45c; --c4:#c48ab0; --c5:#9fb8ad; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181c; --panel:#1e2228; --fg:#e8e6e0; --muted:#a3a9b1; --line:#353b43;
+  --accent:#d98a73; --accent-soft:#3a2721; --chip:#2a3038; --head:#0f1317; --mark:#7fb0cf; --c1:#7fb0cf; --c2:#d98a73; --c3:#e0b45c; --c4:#c48ab0; --c5:#9fb8ad; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55}
+a{color:var(--accent)}
+.band{background:var(--head);color:#f4f2ec}
+.band .in{max-width:1180px;margin:0 auto;padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px}
+.brand{font-weight:700;font-size:18px;letter-spacing:.01em}
+.brand small{font-weight:400;color:#c9c5bb;margin-left:10px;font-size:13px}
+.proto{margin-left:auto;font-family:var(--mono);font-size:12px;color:#f0c9a8;border:1px solid #6b4a3a;padding:2px 8px;border-radius:3px}
+nav.tabs{background:var(--panel);border-bottom:1px solid var(--line)}
+nav.tabs .in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:4px;overflow-x:auto}
+nav.tabs a{display:block;padding:12px 14px;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;font-weight:500}
+nav.tabs a.on{color:var(--fg);border-color:var(--accent)}
+main{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+h2{font-size:17px;margin:28px 0 10px}
+p{max-width:68ch}
+.lede{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 18px}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:12px 14px}
+.kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi.sm b{font-size:15px;line-height:1.35;font-family:var(--mono);padding-block:4px}
+.wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:18px}
+@media (max-width:760px){.wrap{grid-template-columns:1fr}}
+.filters{display:flex;flex-direction:column;gap:12px}
+.filters label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.filters select,.filters input{font:inherit;font-size:14px;padding:7px 8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:3px}
+.filters button{font:inherit;padding:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:3px;cursor:pointer}
+.filters button:focus-visible,nav.tabs a:focus-visible,.row:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.count{font-size:13px;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.list{display:flex;flex-direction:column;gap:8px;min-width:0}
+.row{background:var(--panel);border:1px solid var(--line);padding:12px 14px;cursor:pointer}
+.row:hover{border-color:var(--accent)}
+.row .top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.row .date{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.row .title{font-weight:500;flex:1 1 240px;min-width:0}
+.row .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--fg)}
+.chip.act{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.detail{display:none;margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
+.row.open .detail{display:block}
+.detail dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 14px;margin:0;font-size:14px}
+.detail dt{color:var(--muted)}
+.detail dd{margin:0;word-break:break-all}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--chip);font-weight:500}
+td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px}
+.tablewrap{overflow-x:auto}
+.bars{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:6px 10px;align-items:center;font-size:14px;max-width:640px}
+.bars .bar{height:14px;background:var(--mark);min-width:2px}
+.bars .v{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.trend{background:var(--panel);border:1px solid var(--line);padding:12px 14px;margin:0 0 18px;min-width:0}
+.trend-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:6px}
+.trend-head b{font-size:15px}
+.trend-head .sub{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:4px 10px;border:0;background:var(--panel);color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--chip);color:var(--fg);font-weight:500}
+.seg button:focus-visible{outline:2px solid var(--mark);outline-offset:-2px}
+.ex{font-size:12px;color:var(--accent);margin:0 0 6px}
+.chartbox{overflow-x:auto}
+.trend svg{width:100%;min-width:480px;height:auto;display:block}
+.trend svg text{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+.trend svg .grid{stroke:var(--line);stroke-width:1}
+.trend svg .base{stroke:var(--muted);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.legend .tot{margin-left:auto;color:var(--fg);font-variant-numeric:tabular-nums}
+.mail{font-family:var(--mono);font-size:14px}
+.mail button{font:inherit;font-family:var(--sans);font-size:12px;margin-left:8px;padding:3px 8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:3px;cursor:pointer}
+.note{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;font-size:14px;margin:0 0 18px}
+.sec{display:none}.sec.on{display:block}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.row{transition:border-color .15s}}
+</style>
+</head>
+<body>
+
+<div class="band"><div class="in">
+  <div class="brand">한국 우파 항의행동 트래커 <small>Korean Right-Wing Protest Tracker · 우파 행위자의 집합적 항의행동 사건 데이터베이스</small></div>
+  <div class="proto">시범 운영 중 · 자료 축적 단계</div>
+</div></div>
+<nav class="tabs"><div class="in">
+  <a href="#events" data-tab="events" class="on">사건 목록</a>
+  <a href="#stats" data-tab="stats">통계</a>
+  <a href="#method" data-tab="method">방법론</a>
+  <a href="#about" data-tab="about">소개</a>
+  <a href="#english" data-tab="english">English</a>
+</div></nav>
+
+<main>
+<section class="sec on" id="sec-events">
+  <h1>사건 목록</h1>
+  <p class="lede">언론 보도로 확인된 우파 행위자의 집합적 항의행동을 사건 단위로 기록합니다. 검수를 마친(Approved) 사건만 보입니다. 행을 누르면 상세와 출처가 펼쳐집니다.</p>
+  <div class="kpis" id="kpis"></div>
+  <div class="trend" id="trend-main"></div>
+  <div class="wrap">
+    <aside class="filters">
+      <label>검색<input id="q" type="search" placeholder="제목, 단체, 장소"></label>
+      <label>기간(부터)<input id="from" type="date"></label>
+      <label>기간(까지)<input id="to" type="date"></label>
+      <label>행동 유형<select id="f-action"><option value="">전체</option></select></label>
+      <label>의제<select id="f-issue"><option value="">전체</option></select></label>
+      <label>시도<select id="f-sido"><option value="">전체</option></select></label>
+      <label>행위자 유형<select id="f-actor"><option value="">전체</option></select></label>
+      <button id="reset" type="button">필터 지우기</button>
+    </aside>
+    <div>
+      <div class="count"><span id="count"></span><span id="updated"></span></div>
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="sec-stats">
+  <h1>통계</h1>
+  <p class="lede">아래 수치는 현재 공개된 사건 전체를 집계한 것입니다. 필터와 무관합니다.</p>
+  <h2>추이</h2>
+  <div class="trend" id="trend-stats"></div>
+  <h2>행동 유형별</h2><div class="bars" id="st-action"></div>
+  <h2>의제별</h2><div class="bars" id="st-issue"></div>
+  <h2>시도별</h2><div class="bars" id="st-sido"></div>
+  <h2>행위자 유형별</h2><div class="bars" id="st-actor"></div>
+</section>
+
+<section class="sec" id="sec-method">
+  <h1>방법론</h1>
+  <div class="note">시안 단계의 요약입니다. 공개 시점에 수집 프로토콜과 코드북 전문을 연결합니다.</div>
+  <h2>분석 단위</h2>
+  <p>우파 행위자(단체, 정당, 소모임, 개인 등)가 공적 공간 또는 미디어를 통해 수행하는 개별 집합행동, 담화적 저항, 내부 동원·학습 사건. 1행 = 1사건. 여기서 '우파'는 보수에서 극우까지를 아우르는 넓은 뜻으로 쓰며, 항의행동도 거리 시위만이 아니라 성명·기자회견 같은 담화적 항의와 세미나·강연 같은 내부 동원 행사를 포함하는 넓은 뜻으로 씁니다. 행위자의 성향 판정은 사전에 정하지 않고 자료가 쌓인 뒤 행위자 유형·의제를 기준으로 분석합니다.</p>
+  <h2>수집 경로</h2>
+  <p>보수 성향 인터넷 매체 20여 곳의 기사를 자동으로 수집해 행동어·의제어 기준으로 후보를 고른 뒤, 연구자가 기사 본문을 읽고 사건 여부를 판정하고 코딩합니다. 주류 언론 보도는 확인·보완 자료로 씁니다. 같은 사건을 여러 매체가 보도하면 1행으로 합치고 출처를 모두 기록합니다.</p>
+  <h2>행동 유형 (14개 코드, 5개 중분류)</h2>
+  <div class="tablewrap"><table><tr><th>중분류</th><th>코드</th></tr>
+  <tr><td>담화적</td><td>01 성명·시국선언 · 02 기자회견 · 03 서명·청원 · 04 고소·고발·진정 · 05 피케팅·선전전</td></tr>
+  <tr><td>시위성</td><td>06 항의방문 · 07 집회·행진 · 08 1인시위 · 09 단식·삭발·혈서 · 13 온라인 집단행동</td></tr>
+  <tr><td>대결적</td><td>10 농성·점거·방해·거부 · 14 분신·자해</td></tr>
+  <tr><td>폭력적</td><td>11 물리적 충돌·파괴</td></tr>
+  <tr><td>내부 동원·학습</td><td>12 세미나·토론회·포럼·강연</td></tr></table></div>
+  <h2>의제 구분 (11개 코드, 사건당 최대 3개)</h2>
+  <div class="tablewrap"><table><tr><th>코드</th><th>의제</th><th>예</th></tr>
+  <tr><td>ISS-01</td><td>부정선거</td><td>선거 부정 주장, 수개표·재검표 요구, 선관위 규탄</td></tr>
+  <tr><td>ISS-02</td><td>정권퇴진·반정부·정치인규탄</td><td>대통령·정부 퇴진 요구, 특정 정치인 규탄</td></tr>
+  <tr><td>ISS-03</td><td>사법 문제</td><td>재판·수사·특검·구속에 대한 항의, 법치 수호 요구</td></tr>
+  <tr><td>ISS-04</td><td>우파결집</td><td>보수 진영 단결·통합 호소, 정당 내부 비판</td></tr>
+  <tr><td>ISS-05</td><td>안보·반공·한미동맹</td><td>대북·안보 정책, 간첩·종북 주장, 한미동맹</td></tr>
+  <tr><td>ISS-06</td><td>언론 문제</td><td>편파 보도 주장, 특정 언론 규탄</td></tr>
+  <tr><td>ISS-07</td><td>종교·가족·반LGBTQ·교육</td><td>차별금지법·동성혼 반대, 낙태 반대·생명윤리, 학생인권조례</td></tr>
+  <tr><td>ISS-08</td><td>역사·기억·국가정체성</td><td>건국·이승만·박정희 재평가, 5·18 등 역사 논쟁</td></tr>
+  <tr><td>ISS-09</td><td>사회경제·노동·복지</td><td>노조 규탄, 세금·규제·복지 정책</td></tr>
+  <tr><td>ISS-10</td><td>반이민·반다문화·반중</td><td>중국인 무비자·외국인 정책, 이슬람·난민 반대</td></tr>
+  <tr><td>ISS-99</td><td>기타</td><td>위 범주에 속하지 않는 의제(예: 탈북민 호칭 문제)</td></tr></table></div>
+  <h2>규모</h2>
+  <p>경찰 추산을 우선하고, 없으면 언론 보도, 주최 측 주장, 사진 기반 추정 순으로 기록하며 출처를 함께 표기합니다. 성명·서명·고소처럼 참가 인원 개념이 없는 행동은 '비해당'입니다.</p>
+  <h2>한계</h2>
+  <p>언론에 보도되지 않은 행동은 포착되지 않습니다. 보수 매체의 보도 관행에 따라 수도권과 특정 의제가 과대 대표될 수 있습니다. 인원 수치는 출처에 따라 신뢰도가 다르므로 size_source를 함께 보아야 합니다.</p>
+</section>
+
+<section class="sec" id="sec-about">
+  <h1>소개</h1>
+  <p>이 데이터베이스는 한국 우파(보수에서 극우까지) 진영의 집합적 항의행동을 사건 단위로 기록하는 비영리 연구 프로젝트입니다. 자료는 매일 자동으로 갱신되며, 검수를 마친 사건부터 공개됩니다.</p>
+  <h2>정정·삭제 요청</h2>
+  <p>사실관계 오류는 확인 후 수정합니다. 공개된 언론 보도에 근거한 기록은 유지하되, 개인 정보에 해당하는 내용은 요청 시 검토합니다. 요청은 아래 이메일로 보내 주십시오.</p>
+  <h2>자료 이용·인용 문의</h2>
+  <p>자료를 연구·보도에 이용하거나 인용하려는 경우, 아래 이메일로 연락해 주십시오.</p>
+  <p class="mail"><span id="mail">rightactivitytracking@gmail.com</span> <button type="button" id="copymail">주소 복사</button></p>
+</section>
+<section class="sec" id="sec-english" lang="en">
+  <h1>Korean Right-Wing Protest Tracker</h1>
+  <p>This is a non-profit research project that records the protest events of conservative and right-wing actors in South Korea as an event-level database, in the tradition of protest event analysis. Protest is defined broadly to include discursive forms (statements, press conferences, petitions) and internal mobilization events (seminars, forums) alongside demonstrations. One row is one event. The data are updated automatically every day, and only events that have passed review are published.</p>
+  <h2>What is recorded</h2>
+  <p>Individual collective actions, discursive protests, and internal mobilization events carried out by conservative and right-wing actors (organizations, parties, small groups, individuals) in public space or through the media, as confirmed by news reports. Fourteen action codes are grouped into five categories: discursive (statements, press conferences, petitions, complaints, picketing), demonstrative (rallies and marches, one-person protests, protest visits, hunger strikes, online collective action), confrontational (sit-ins and occupations, self-immolation), violent (physical clashes), and internal mobilization (seminars, forums, lectures).</p>
+  <h2>How the data are collected</h2>
+  <p>Articles from about twenty conservative online outlets are collected automatically and screened with action and issue keywords. A researcher then reads each candidate article, decides whether it describes an event, and codes it by hand according to a published codebook. Mainstream media reports are used to verify and supplement. Multiple reports of the same event are merged into one row with all sources listed.</p>
+  <h2>Limitations</h2>
+  <p>Actions that were not reported in the news are not captured. Reporting practices of conservative outlets may over-represent the Seoul area and certain issues. Crowd sizes vary in reliability depending on the source, which is recorded alongside each figure.</p>
+  <h2>Use, citation and corrections</h2>
+  <p>If you wish to use or cite the data for research or reporting, or to request a correction, please contact us by e-mail.</p>
+  <p class="mail"><span>rightactivitytracking@gmail.com</span></p>
+</section>
+<footer>자료 갱신: <span id="updated2"></span> · 시범 운영 중입니다. 2026년 11월 11일부터 수집한 사건을 검수가 끝나는 대로 올립니다.</footer>
+</main>
+
+<script>
+// 공개 시에는 이 블록 대신 events.json을 읽습니다 (아래 load() 참조).
+window.SAMPLE = {"generated_at":"2026-11-15 06:30 KST","events":[
+{"event_id":"EVT-20261111-01","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"오전","event_title":"태여연 낙태약 도입 반대 기자회견","action_primary":"02","action_secondary":"","mid_category":"담화적","organizers":"태아·여성보호국민연합","actor_type":"T1","party_link":"P0","party_name":"","size_raw":"4","size_source":"코더추정","size_scale":"S1","region_sido":"서울","region_sigungu":"영등포구","location_spot":"국회6문 앞","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"정부,국회","source_media":"기독일보","source_url":"https://www.christiandaily.co.kr/news/167130","source_type":"SRC2"},
+{"event_id":"EVT-20261111-02","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"","event_title":"대한교조 인하대 학생 이승만 동상복원 활동 지지 성명","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"대한민국교원조합","actor_type":"T5","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-08","issue_2":"","issue_3":"","target_entity":"인하대,진보당","source_media":"기독일보","source_url":"https://www.christiandaily.co.kr/news/167134","source_type":"SRC2"},
+{"event_id":"EVT-20261111-03","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"14:40","event_title":"낙태약 도입·차별금지법 반대 기자회견","action_primary":"02","action_secondary":"","mid_category":"담화적","organizers":"거룩한방파제 통합국민대회","actor_type":"T1","party_link":"P1","party_name":"국민의힘","size_raw":"9","size_source":"코더추정","size_scale":"S1","region_sido":"서울","region_sigungu":"영등포구","location_spot":"국회 소통관","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"이재명 정부,정치권","source_media":"기독일보","source_url":"https://www.christiandaily.co.kr/news/167139","source_type":"SRC2"},
+{"event_id":"EVT-20261111-04","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"","event_title":"최광 자유우파 애국 지도자들의 대동단결 호소 성명","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"최광","actor_type":"T8","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-02","issue_2":"ISS-04","issue_3":"","target_entity":"이재명 정부","source_media":"트루스데일리","source_url":"https://www.truthdaily.co.kr/news/articleView.html?idxno=7166","source_type":"SRC2"},
+{"event_id":"EVT-20261111-05","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"20:00","event_title":"청년단체 보스 부정선거 재선거 요구 집회","action_primary":"07","action_secondary":"","mid_category":"시위성","organizers":"B.O.S.S.","actor_type":"T4","party_link":"P0","party_name":"","size_raw":"37","size_source":"코더추정","size_scale":"S2","region_sido":"경기","region_sigungu":"부천시","location_spot":"신중동 미관광장","issue_1":"ISS-01","issue_2":"ISS-03","issue_3":"","target_entity":"이재명 정부","source_media":"프리진뉴스","source_url":"https://www.freezinenews.com/news/articleView.html?idxno=31432","source_type":"SRC2"},
+{"event_id":"EVT-20261111-06","start_date":"2026-11-11","end_date":"2026-11-11","time_info":"","event_title":"반론조차 거부한 뉴스타파는 ‘改革’인가 ‘新惡’인가","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"공정언론국민연대","actor_type":"T3","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-06","issue_2":"","issue_3":"","target_entity":"뉴스타파,민노총 언론노조","source_media":"엔지오프레스","source_url":"https://www.ngopress.kr/news/articleView.html?idxno=23869","source_type":"SRC2"},
+{"event_id":"EVT-20261111-07","start_date":"2026-11-11","end_date":"","time_info":"","event_title":"인하대 이승만 동상 복원 서명운동","action_primary":"03","action_secondary":"","mid_category":"담화적","organizers":"인하정신","actor_type":"T4","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"온라인","region_sigungu":"","location_spot":"","issue_1":"ISS-08","issue_2":"","issue_3":"","target_entity":"인하대","source_media":"프리진뉴스","source_url":"https://www.freezinenews.com/news/articleView.html?idxno=31439","source_type":"SRC2"},
+{"event_id":"EVT-20261112-01","start_date":"2026-11-12","end_date":"2026-11-13","time_info":"","event_title":"한동훈 의원 수사 촉구 1인시위→집회","action_primary":"07","action_secondary":"08","mid_category":"시위성","organizers":"유승수","actor_type":"T8","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"S0","region_sido":"서울","region_sigungu":"종로구","location_spot":"서울경찰청 앞","issue_1":"ISS-02","issue_2":"","issue_3":"","target_entity":"경찰,한동훈 의원","source_media":"프리진뉴스; 프리진뉴스","source_url":"https://www.freezinenews.com/news/articleView.html?idxno=31444; https://www.freezinenews.com/news/articleView.html?idxno=31487","source_type":"SRC2"},
+{"event_id":"EVT-20261112-02","start_date":"2026-11-12","end_date":"2026-11-12","time_info":"","event_title":"‘처벌이 없다’는 말로 강제를 가리지 말라","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"복음언론인회, 거룩한방파제 통합국민대회","actor_type":"T2","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"박주민 의원","source_media":"기독일보; 프리진뉴스; 크리스천투데이","source_url":"https://www.christiandaily.co.kr/news/167194; https://www.freezinenews.com/news/articleView.html?idxno=31462; https://www.christiantoday.co.kr/news/378597","source_type":"SRC2"},
+{"event_id":"EVT-20261112-03","start_date":"2026-11-12","end_date":"2026-11-12","time_info":"","event_title":"자중지란을 경계한다","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"사회정의를 바라는 전국교수모임","actor_type":"T3","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-04","issue_2":"ISS-02","issue_3":"","target_entity":"국민의힘","source_media":"자유일보; 프리진뉴스","source_url":"https://www.jayupress.com/news/articleView.html?idxno=56833; https://www.freezinenews.com/news/articleView.html?idxno=31466","source_type":"SRC2"},
+{"event_id":"EVT-20261112-04","start_date":"2026-11-12","end_date":"2026-11-12","time_info":"","event_title":"사랑제일교회 대통령 재개발 관련 법원칙 강조 비판 성명","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"사랑제일교회","actor_type":"T2","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-02","issue_2":"ISS-99","issue_3":"","target_entity":"이재명 정부,성북구청장","source_media":"자유일보","source_url":"https://www.jayupress.com/news/articleView.html?idxno=56806","source_type":"SRC2"},
+{"event_id":"EVT-20261112-05","start_date":"2026-11-12","end_date":"","time_info":"상설","event_title":"올림픽공원 부정선거 재선거 요구 농성","action_primary":"10","action_secondary":"","mid_category":"대결적","organizers":"","actor_type":"T9","party_link":"P0","party_name":"","size_raw":"100","size_source":"언론","size_scale":"S3","region_sido":"서울","region_sigungu":"송파구","location_spot":"올림픽공원","issue_1":"ISS-01","issue_2":"","issue_3":"","target_entity":"정부,선관위","source_media":"데일리굿뉴스; 데일리굿뉴스; 코리아드림뉴스","source_url":"https://www.goodnews1.com/news/articleView.html?idxno=466148; https://www.goodnews1.com/news/articleView.html?idxno=466194; http://www.kdntv.kr/news/articleView.html?idxno=28801","source_type":"SRC2"},
+{"event_id":"EVT-20261112-06","start_date":"2026-11-12","end_date":"2026-11-12","time_info":"","event_title":"북한이탈주민중앙회 북향민 명칭 사용 반대 집회","action_primary":"07","action_secondary":"","mid_category":"시위성","organizers":"북한이탈주민중앙회","actor_type":"T1","party_link":"P0","party_name":"","size_raw":"50","size_source":"언론","size_scale":"S2","region_sido":"서울","region_sigungu":"종로구","location_spot":"정부서울청사 앞","issue_1":"ISS-99","issue_2":"ISS-02","issue_3":"","target_entity":"통일부,정동영 장관","source_media":"자유일보","source_url":"https://www.jayupress.com/news/articleView.html?idxno=56849","source_type":"SRC2"},
+{"event_id":"EVT-20261112-07","start_date":"2026-11-12","end_date":"2026-11-12","time_info":"","event_title":"이태한 특검! 당신은 왜 투표지 번호를 확인하지 않는가?","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"올곧과학검증단","actor_type":"T3","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-01","issue_2":"","issue_3":"","target_entity":"이태한 특검","source_media":"트루스데일리","source_url":"https://www.truthdaily.co.kr/news/articleView.html?idxno=7183","source_type":"SRC2"},
+{"event_id":"EVT-20261113-01","start_date":"2026-11-13","end_date":"2026-11-13","time_info":"","event_title":"태여연 법 개정 없이 약물낙태 개정 규탄 성명","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"태아·여성보호국민연합","actor_type":"T1","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"이재명 대통령,정은경 장관","source_media":"자유일보; 기독일보; 크리스천투데이","source_url":"https://www.jayupress.com/news/articleView.html?idxno=56856; https://www.christiandaily.co.kr/news/167251; https://www.christiantoday.co.kr/news/378602","source_type":"SRC2"},
+{"event_id":"EVT-20261113-02","start_date":"2026-11-13","end_date":"2026-11-13","time_info":"","event_title":"국민의 생명보다 중요한 것은 없습니다","action_primary":"01","action_secondary":"","mid_category":"담화적","organizers":"한국기독교생명윤리협회","actor_type":"T2","party_link":"P0","party_name":"","size_raw":"","size_source":"","size_scale":"SX","region_sido":"비해당","region_sigungu":"","location_spot":"","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"이재명 대통령, 이재명 정부","source_media":"기독일보","source_url":"https://www.christiandaily.co.kr/news/167259","source_type":"SRC2"},
+{"event_id":"EVT-20261113-03","start_date":"2026-11-13","end_date":"2026-11-13","time_info":"13:00","event_title":"낙태약 및 차별금지법 반대 통합국민대회","action_primary":"07","action_secondary":"06","mid_category":"시위성","organizers":"거룩한방파제 통합국민대회","actor_type":"T1","party_link":"P0","party_name":"","size_raw":"3000","size_source":"주최측","size_scale":"S4","region_sido":"서울","region_sigungu":"종로구","location_spot":"청와대 인근 효자로 일대","issue_1":"ISS-07","issue_2":"","issue_3":"","target_entity":"이재명 정부, 청와대, 국회","source_media":"기독일보; 크리스천투데이","source_url":"https://www.christiandaily.co.kr/news/167261; https://www.christiantoday.co.kr/news/378627","source_type":"SRC2"}
+]};
+</script>
+<script>
+const L = {
+ action:{"01":"성명·시국선언","02":"기자회견","03":"서명·청원","04":"고소·고발·진정","05":"피케팅·선전전","06":"항의방문","07":"집회·행진","08":"1인시위","09":"단식·삭발·혈서","10":"농성·점거·방해","11":"물리적 충돌·파괴","12":"세미나·토론회","13":"온라인 집단행동","14":"분신·자해"},
+ issue:{"ISS-01":"부정선거","ISS-02":"정권퇴진·반정부·정치인규탄","ISS-03":"사법 문제","ISS-04":"우파결집","ISS-05":"안보·반공·한미동맹","ISS-06":"언론 문제","ISS-07":"종교·가족·반LGBTQ·교육","ISS-08":"역사·기억·국가정체성","ISS-09":"사회경제·노동·복지","ISS-10":"반이민·반다문화·반중","ISS-99":"기타"},
+ actor:{"T1":"공식 시민사회단체","T2":"종교 조직","T3":"직능·전문가·학술단체","T4":"청년·대학생 단체","T5":"학부모·교육·여성단체","T6":"유튜버·뉴미디어","T7":"정당","T8":"소모임·개인","T9":"미상"},
+ party:{"P0":"정당 무관","P1":"정당+시민단체 연대","P2":"정당 단독 옥외행동"},
+ size:{"SX":"비해당","S0":"미상","S1":"1~9명","S2":"10~99명","S3":"100~999명","S4":"1,000~9,999명","S5":"1만 명 이상"},
+ src:{"SRC1":"주류 언론","SRC2":"보수 매체","SRC3":"단체 채널","SRC4":"기타"}
+};
+const $ = s => document.querySelector(s);
+let DATA = null, EVENTS = [];
+
+async function load(){
+  // 공개 버전: 같은 폴더의 events.json을 읽는다. 없으면(시안) 내장 표본을 쓴다.
+  try { const r = await fetch('events.json', {cache:'no-store'}); if (r.ok) { DATA = await r.json(); } } catch(e) {}
+  if (!DATA) DATA = window.SAMPLE;
+  EVENTS = DATA.events.slice().sort((a,b)=> (b.start_date||'').localeCompare(a.start_date||'') || a.event_id.localeCompare(b.event_id));
+  $('#updated').textContent = '자료 갱신 ' + DATA.generated_at; $('#updated2').textContent = DATA.generated_at;
+  fillSelect('#f-action', L.action, uniq('action_primary')); fillSelect('#f-issue', L.issue, uniq('issue_1'));
+  fillSelect('#f-sido', null, uniq('region_sido')); fillSelect('#f-actor', L.actor, uniq('actor_type'));
+  kpis(); render(); stats(); renderTrends(); route();
+}
+
+// ---- 주간·월간 추이 그래프 (중분류별 누적 막대) ----
+const CATS = [['담화적','--c1'],['시위성','--c2'],['대결적','--c3'],['폭력적','--c4'],['내부동원','--c5']];
+let TMODE = 'week';
+function catOf(m){ m = m || ''; if (m.includes('내부')) return '내부동원'; const f = CATS.find(c => m.startsWith(c[0])); return f ? f[0] : '담화적'; }
+function ymd(x){ return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function keyOf(d, mode){ if (mode==='month') return d.slice(0,7); if (mode==='day') return d; const x = new Date(d+'T00:00:00'); x.setDate(x.getDate()-((x.getDay()+6)%7)); return ymd(x); }
+function shiftKey(k, mode, n){
+  if (mode==='month'){ let [y,m] = k.split('-').map(Number); m += n; while(m>12){m-=12;y++;} while(m<1){m+=12;y--;} return y+'-'+String(m).padStart(2,'0'); }
+  const x = new Date(k+'T00:00:00'); x.setDate(x.getDate()+(mode==='day'?1:7)*n); return ymd(x);
+}
+function realBuckets(mode){
+  const map = {};
+  EVENTS.forEach(e => { if (!e.start_date) return; const k = keyOf(e.start_date, mode), c = catOf(e.mid_category);
+    if (!map[k]) map[k] = {}; map[k][c] = (map[k][c]||0) + 1; });
+  const keys = Object.keys(map).sort(); if (!keys.length) return [];
+  const minN = mode==='day' ? 14 : mode==='week' ? 8 : 6;   // 자료가 적어도 축이 비지 않게 앞쪽을 빈 칸으로 채운다
+  let first = keys[0]; const last = keys[keys.length-1];
+  let span = 1; for (let k = first; k < last; k = shiftKey(k, mode, 1)) span++;
+  for (; span < minN; span++) first = shiftKey(first, mode, -1);
+  const out = []; for (let k = first; k <= last; k = shiftKey(k, mode, 1)) out.push({key:k, c:map[k]||{}});
+  return mode==='day' ? out.slice(-60) : out;
+}
+function wk(k){ const e=shiftKey(k,'day',6); return Number(k.slice(5,7))+'.'+Number(k.slice(8,10))+'.~'+Number(e.slice(5,7))+'.'+Number(e.slice(8,10))+'.'; }
+function label(k, mode){ return mode==='month' ? (Number(k.slice(5,7))+'월') : (Number(k.slice(5,7))+'/'+Number(k.slice(8,10))); }
+function niceStep(max){ const raw = max/4, p = Math.pow(10, Math.floor(Math.log10(raw||1))), m = raw/p; return Math.max(1, (m<=1?1:m<=2?2:m<=5?5:10)*p); }
+function drawTrend(el){
+  const data = realBuckets(TMODE);
+  const W=720, H=240, ml=36, mr=8, mt=16, mb=28, iw=W-ml-mr, ih=H-mt-mb;
+  const tot = data.map(d => CATS.reduce((a,[c]) => a+(d.c[c]||0), 0));
+  const max = Math.max(1, ...tot), step = niceStep(max), top = Math.ceil(max/step)*step;
+  const bw = iw/Math.max(1,data.length), gap = Math.max(Math.min(8, bw*0.28), bw-56);  // 막대 최대 56px
+  const every = Math.max(1, Math.ceil(data.length/(TMODE==='month'?12:TMODE==='day'?10:9)));
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${TMODE==='month'?'월별':TMODE==='day'?'일별':'주별(월~일)'} 사건 수 막대그래프">`;
+  for (let v=0; v<=top; v+=step){ const y = mt+ih-(v/top)*ih;
+    svg += `<line class="${v===0?'base':'grid'}" x1="${ml}" x2="${W-mr}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"/><text x="${ml-6}" y="${(y+4).toFixed(1)}" text-anchor="end">${v}</text>`; }
+  data.forEach((d,i) => { let y = mt+ih; const x = ml+i*bw+gap/2, w = Math.max(1, bw-gap);
+    CATS.forEach(([c,tok]) => { const v = d.c[c]||0; if (!v) return; const h = v/top*ih; y -= h;
+      svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="fill:var(${tok})"><title>${TMODE==='month'?d.key:TMODE==='day'?d.key:wk(d.key)} · ${c} ${v}건 (합계 ${tot[i]}건)</title></rect>`; });
+    if (i % every === 0) svg += `<text x="${(ml+i*bw+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${label(d.key,TMODE)}</text>`;
+    if (TMODE==='month' && tot[i]) svg += `<text x="${(ml+i*bw+bw/2).toFixed(1)}" y="${(mt+ih-tot[i]/top*ih-4).toFixed(1)}" text-anchor="middle">${tot[i]}</text>`;
+  });
+  svg += '</svg>';
+  const sum = tot.reduce((a,b)=>a+b, 0);
+  const lastK = data.length ? data[data.length-1].key : ''; const range = data.length ? `${data[0].key} ~ ${TMODE==='week'?shiftKey(lastK,'day',6):lastK}` : '';
+  el.innerHTML = `<div class="trend-head"><b>${TMODE==='month'?'월별':TMODE==='day'?'일별':'주별(월~일)'} 사건 수<span class="sub">${range}</span></b>
+    <span class="ctrls"><span class="seg" role="group" aria-label="단위"><button type="button" data-mode="day" class="${TMODE==='day'?'on':''}">일간</button><button type="button" data-mode="week" class="${TMODE==='week'?'on':''}">주간</button><button type="button" data-mode="month" class="${TMODE==='month'?'on':''}">월간</button></span></span></div>
+    <div class="chartbox">${data.length ? svg : '<p class="lede">그릴 자료가 없습니다.</p>'}</div>
+    <div class="legend">${CATS.map(([c,t]) => `<span><i style="background:var(${t})"></i>${c}</span>`).join('')}<span class="tot">합계 ${sum.toLocaleString()}건</span></div>`;
+}
+function renderTrends(){ ['#trend-main','#trend-stats'].forEach(s => drawTrend($(s))); }
+document.addEventListener('click', ev => { const b = ev.target.closest('.trend button'); if (!b) return;
+  if (b.dataset.mode) TMODE = b.dataset.mode; renderTrends(); });
+function uniq(k){ return [...new Set(EVENTS.map(e=>e[k]).filter(Boolean))].sort(); }
+function fillSelect(sel, labels, vals){ const s=$(sel); vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=labels?`${v} ${labels[v]||''}`:v; s.appendChild(o);}); }
+function kpis(){
+  const n=EVENTS.length, protest=EVENTS.filter(e=>e.mid_category!=='내부동원').length;
+  const orgs=new Set(EVENTS.flatMap(e=>e.organizers.split(',').map(s=>s.trim()).filter(Boolean))).size;
+  const outdoor=EVENTS.filter(e=>['06','07','08','09','10','11'].includes(e.action_primary)).length;
+  const dates=EVENTS.map(e=>e.start_date).filter(Boolean).sort();
+  $('#kpis').innerHTML=[[n,'공개 사건'],[outdoor,'옥외 행동'],[protest,'항의 사건(내부동원 제외)'],[orgs,'행위자(단체·개인)'],[dates[0]+' ~ '+dates[dates.length-1],'수록 기간']]
+    .map(([b,s])=>`<div class="kpi${String(b).length>8?' sm':''}"><b>${b}</b><span>${s}</span></div>`).join('');
+}
+function filtered(){
+  const q=$('#q').value.trim(), f=$('#from').value, t=$('#to').value, a=$('#f-action').value, i=$('#f-issue').value, s=$('#f-sido').value, ac=$('#f-actor').value;
+  return EVENTS.filter(e=> (!q || (e.event_title+e.organizers+e.location_spot+e.target_entity).includes(q))
+    && (!f || e.start_date>=f) && (!t || e.start_date<=t) && (!a || e.action_primary===a)
+    && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
+}
+function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function render(){
+  const rows=filtered(); $('#count').textContent=`${rows.length}건 / 전체 ${EVENTS.length}건`;
+  $('#list').innerHTML = rows.map(e=>{
+    const when = e.end_date && e.end_date!==e.start_date ? `${e.start_date} ~ ${e.end_date}` : (e.start_date + (e.end_date? '' : ' ~ 진행 중'));
+    const place = [e.region_sido, e.region_sigungu, e.location_spot].filter(x=>x && x!=='비해당').join(' ');
+    const issues=[e.issue_1,e.issue_2,e.issue_3].filter(Boolean).map(x=>`<span class="chip">${esc(L.issue[x]||x)}</span>`).join('');
+    const size = e.size_raw ? `${Number(e.size_raw).toLocaleString()}명 (${esc(e.size_source)})` : (L.size[e.size_scale]||'');
+    const srcs = e.source_url.split(';').map(s=>s.trim()).filter(Boolean); const medias=e.source_media.split(';').map(s=>s.trim());
+    const links = srcs.map((u,k)=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(medias[k]||'출처')}</a>`).join(' · ');
+    return `<div class="row" tabindex="0" data-id="${esc(e.event_id)}">
+      <div class="top"><span class="date">${when}</span><span class="title">${esc(e.event_title)}</span></div>
+      <div class="meta"><span class="chip act">${esc(L.action[e.action_primary]||e.action_primary)}</span>${e.organizers?`<span class="chip">${esc(e.organizers)}</span>`:''}${place?`<span class="chip">${esc(place)}</span>`:''}${issues}</div>
+      <div class="detail"><dl>
+        <dt>사건 번호</dt><dd>${esc(e.event_id)}</dd>
+        <dt>행동</dt><dd>${esc(L.action[e.action_primary]||'')}${e.action_secondary?` + ${esc(L.action[e.action_secondary]||e.action_secondary)}`:''} (${esc(e.mid_category)})</dd>
+        <dt>주최</dt><dd>${esc(e.organizers)||'미상'} · ${esc(L.actor[e.actor_type]||e.actor_type)}</dd>
+        <dt>정당 연계</dt><dd>${esc(L.party[e.party_link]||e.party_link)}${e.party_name?` (${esc(e.party_name)})`:''}</dd>
+        <dt>규모</dt><dd>${size}</dd>
+        <dt>장소</dt><dd>${esc(place)||'비해당'}${e.time_info?` · ${esc(e.time_info)}`:''}</dd>
+        <dt>대상</dt><dd>${esc(e.target_entity)}</dd>
+        <dt>출처</dt><dd>${links} <span class="chip">${esc(L.src[e.source_type]||'')}</span></dd>
+      </dl></div></div>`;
+  }).join('') || '<p class="lede">조건에 맞는 사건이 없습니다.</p>';
+}
+function bars(sel, key, labels, multi){
+  const c={}; EVENTS.forEach(e=>{ const v=e[key]; if(v) c[v]=(c[v]||0)+1; });
+  const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]); const max=arr[0]?arr[0][1]:1;
+  $(sel).innerHTML=arr.map(([k,v])=>`<span>${esc(labels?(labels[k]||k):k)}</span><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
+}
+function stats(){ bars('#st-action','action_primary',L.action); bars('#st-issue','issue_1',L.issue); bars('#st-sido','region_sido',null); bars('#st-actor','actor_type',L.actor); }
+function route(){
+  const h=(location.hash||'#events').slice(1); const ok=['events','stats','method','about','english'].includes(h)?h:'events';
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on', s.id==='sec-'+ok));
+  document.querySelectorAll('nav.tabs a').forEach(a=>a.classList.toggle('on', a.dataset.tab===ok));
+}
+addEventListener('hashchange', route);
+['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).addEventListener('input', render));
+$('#reset').onclick=()=>{ ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).value=''); render(); };
+$('#list').addEventListener('click', ev=>{ const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) r.classList.toggle('open'); });
+$('#list').addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ const r=ev.target.closest('.row'); if(r) r.classList.toggle('open'); }});
+$('#copymail').onclick=async ()=>{ const b=$('#copymail'); try{ await navigator.clipboard.writeText($('#mail').textContent); b.textContent='복사됨'; }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($('#mail')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent='Ctrl+C로 복사'; }
+  setTimeout(()=>b.textContent='주소 복사',2000); };
+load();
+</script>
+</body>
+</html>
