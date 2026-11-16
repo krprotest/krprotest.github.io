@@ -51,6 +51,28 @@ now = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
 os.makedirs(OUT_DIR, exist_ok=True)
 with open(os.path.join(OUT_DIR, "events.json"), "w", encoding="utf-8") as f:
     json.dump({"generated_at": now, "count": len(events), "events": events}, f, ensure_ascii=False, indent=1)
+# RSS 피드: 최근 공개 사건 50건
+SITE = "https://rightactivitytracking.github.io/kr-right-protest/"
+AL = {"01":"성명·시국선언","02":"기자회견","03":"서명·청원","04":"고소·고발·진정","05":"피케팅·선전전","06":"항의방문","07":"집회·행진",
+      "08":"1인시위","09":"단식·삭발·혈서","10":"농성·점거·방해","11":"물리적 충돌·파괴","12":"세미나·토론회","13":"온라인 집단행동","14":"분신·자해"}
+def _x(t):
+    return (t or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+items = []
+for ev in sorted(events, key=lambda x: (x["start_date"], x["event_id"]), reverse=True)[:50]:
+    place = " ".join(x for x in (ev["region_sido"], ev["region_sigungu"], ev["location_spot"]) if x and x != "비해당")
+    desc = " · ".join(x for x in (AL.get(ev["action_primary"], ev["action_primary"]), ev["organizers"], place, ev["start_date"]) if x)
+    try:
+        pub = datetime.strptime(ev["start_date"], "%Y-%m-%d").replace(tzinfo=KST).strftime("%a, %d %b %Y 09:00:00 +0900")
+    except ValueError:
+        pub = ""
+    link = SITE + "?id=" + ev["event_id"]
+    items.append(f"<item><title>{_x(ev['event_title'])}</title><link>{link}</link><guid>{link}</guid>"
+                 f"<pubDate>{pub}</pubDate><description>{_x(desc)}</description></item>")
+with open(os.path.join(OUT_DIR, "feed.xml"), "w", encoding="utf-8") as f:
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>'
+            f"<title>한국 보수·우파 항의행동 트래커</title><link>{SITE}</link>"
+            f"<description>새로 공개된 사건</description><lastBuildDate>{datetime.now(KST).strftime('%a, %d %b %Y %H:%M:%S +0900')}</lastBuildDate>"
+            + "".join(items) + "</channel></rss>")
 # CSV 내려받기는 당분간 제공하지 않는다(자료 이용은 이메일 문의).
 print(f"Approved {len(events)}건 내보냄, 건너뜀 {len(skipped)}건 {skipped}")
 # 비공개 칸이 섞이지 않았는지 마지막으로 확인

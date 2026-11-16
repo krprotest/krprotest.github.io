@@ -53,6 +53,9 @@ p{max-width:68ch}
 .filters button:focus-visible,nav.tabs a:focus-visible,.row:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .count{font-size:13px;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .list{display:flex;flex-direction:column;gap:8px;min-width:0}
+.more{font:inherit;width:100%;padding:10px;border:1px dashed var(--line);background:var(--panel);color:var(--muted);border-radius:3px;cursor:pointer;margin-top:8px}
+.more:hover{color:var(--fg);border-color:var(--accent)}
+.more:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .row{background:var(--panel);border:1px solid var(--line);padding:12px 14px;cursor:pointer}
 .row:hover{border-color:var(--accent)}
 .row .top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
@@ -136,6 +139,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
     <div>
       <div class="count"><span id="count"></span><span id="updated"></span></div>
       <div class="list" id="list"></div>
+      <button type="button" class="more" id="more" hidden></button>
     </div>
   </div>
 </section>
@@ -188,6 +192,8 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <p>이 데이터베이스는 한국 보수·우파 진영(온건 보수에서 극우까지)의 집합적 항의행동을 사건 단위로 기록하는 비영리 연구 프로젝트입니다. 자료는 매일 자동으로 갱신되며, 검수를 마친 사건부터 공개됩니다.</p>
   <h2>정정·삭제 요청</h2>
   <p>사실관계 오류는 확인 후 수정합니다. 공개된 언론 보도에 근거한 기록은 유지하되, 개인 정보에 해당하는 내용은 요청 시 검토합니다. 요청은 아래 이메일로 보내 주십시오.</p>
+  <h2>새 사건 받아보기</h2>
+  <p>RSS 리더에 <a href="feed.xml">feed.xml</a>을 등록하면 새로 공개되는 사건을 받아볼 수 있습니다. 사건 목록에서 필터를 건 뒤 주소창의 주소를 복사하면 그 조건 그대로 다른 사람에게 보낼 수 있습니다.</p>
   <h2>자료 이용·인용 문의</h2>
   <p>자료를 연구·보도에 이용하거나 인용하려는 경우, 아래 이메일로 연락해 주십시오.</p>
   <p class="mail"><span id="mail">rightactivitytracking@gmail.com</span> <button type="button" id="copymail">주소 복사</button></p>
@@ -250,7 +256,7 @@ async function load(){
   $('#updated').textContent = '자료 갱신 ' + DATA.generated_at; $('#updated2').textContent = DATA.generated_at;
   fillSelect('#f-action', L.action, uniq('action_primary')); fillSelect('#f-issue', L.issue, uniq('issue_1'));
   fillSelect('#f-sido', null, uniq('region_sido')); fillSelect('#f-actor', L.actor, uniq('actor_type'));
-  kpis(); render(); stats(); renderTrends(); route();
+  readURL(); kpis(); render(); stats(); renderTrends(); route();
 }
 
 // ---- 주간·월간 추이 그래프 (중분류별 누적 막대) ----
@@ -322,8 +328,17 @@ function filtered(){
     && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
 }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';
+const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};
+function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; }
+function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (OPEN_ID) u.set('id', OPEN_ID);
+  const qs = u.toString(); try { history.replaceState(null, '', (qs ? '?' + qs : location.pathname) + location.hash); } catch(e) {} }
 function render(){
-  const rows=filtered(); $('#count').textContent=`${rows.length}건 / 전체 ${EVENTS.length}건`;
+  const all=filtered(); $('#count').textContent=`${all.length}건 / 전체 ${EVENTS.length}건`;
+  const rows = all.slice(0, LIMIT);
+  const more = $('#more'); more.hidden = all.length <= LIMIT;
+  if (!more.hidden) more.textContent = `이전 사건 더 보기 (${all.length - LIMIT}건 남음)`;
+  writeURL();
   $('#list').innerHTML = rows.map(e=>{
     const when = e.end_date && e.end_date!==e.start_date ? `${e.start_date} ~ ${e.end_date}` : (e.start_date + (e.end_date? '' : ' ~ 진행 중'));
     const place = [e.region_sido, e.region_sigungu, e.location_spot].filter(x=>x && x!=='비해당').join(' ');
@@ -347,7 +362,9 @@ function render(){
         <dt>출처</dt><dd>${links}</dd>
       </dl></div></div>`;
   }).join('') || '<p class="lede">조건에 맞는 사건이 없습니다.</p>';
+  if (OPEN_ID) { const r = document.querySelector(`.row[data-id="${CSS.escape(OPEN_ID)}"]`); if (r) { r.classList.add('open'); r.scrollIntoView({block:'center'}); } }
 }
+$('#more').onclick = () => { LIMIT += PAGE; render(); };
 function bars(sel, key, labels, multi){
   const c={}; EVENTS.forEach(e=>{ const v=e[key]; if(v) c[v]=(c[v]||0)+1; });
   const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]); const max=arr[0]?arr[0][1]:1;
@@ -360,9 +377,9 @@ function route(){
   document.querySelectorAll('nav.tabs a').forEach(a=>a.classList.toggle('on', a.dataset.tab===ok));
 }
 addEventListener('hashchange', route);
-['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).addEventListener('input', render));
-$('#reset').onclick=()=>{ ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).value=''); render(); };
-$('#list').addEventListener('click', ev=>{ const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) r.classList.toggle('open'); });
+['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).addEventListener('input', ()=>{ LIMIT = PAGE; OPEN_ID=''; render(); }));
+$('#reset').onclick=()=>{ ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).value=''); LIMIT = PAGE; OPEN_ID=''; render(); };
+$('#list').addEventListener('click', ev=>{ const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) { r.classList.toggle('open'); OPEN_ID = r.classList.contains('open') ? r.dataset.id : ''; writeURL(); } });
 $('#list').addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ const r=ev.target.closest('.row'); if(r) r.classList.toggle('open'); }});
 $('#copymail').onclick=async ()=>{ const b=$('#copymail'); try{ await navigator.clipboard.writeText($('#mail').textContent); b.textContent='복사됨'; }
   catch(e){ const r=document.createRange(); r.selectNodeContents($('#mail')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent='Ctrl+C로 복사'; }
