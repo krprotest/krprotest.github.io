@@ -327,12 +327,20 @@ function filtered(){
     && (!f || e.start_date>=f) && (!t || e.start_date<=t) && (!a || e.action_primary===a)
     && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
 }
-// 주최: 행위자 유형은 첫 번째 단체(유형 판정 기준)에만 붙인다
+// 주최: 단체마다 행위자 유형을 붙이되, 이어지는 단체의 유형이 같으면 묶어서 한 번만 표시
 function orgLine(e){
   const orgs = String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
   if (!orgs.length) return '미상';
-  const t = L.actor[e.actor_type] ? ` (${esc(L.actor[e.actor_type])})` : '';
-  return esc(orgs[0]) + t + (orgs.length > 1 ? ', ' + orgs.slice(1).map(esc).join(', ') : '');
+  const types = Array.isArray(e.organizer_types) && e.organizer_types.length === orgs.length
+    ? e.organizer_types : orgs.map((_, k) => k === 0 ? e.actor_type : '');
+  const parts = []; let k = 0;
+  while (k < orgs.length) {
+    let j = k; while (j + 1 < orgs.length && types[j + 1] === types[k]) j++;
+    const names = orgs.slice(k, j + 1).map(esc).join(', ');
+    parts.push(names + (L.actor[types[k]] ? ` (${esc(L.actor[types[k]])})` : ''));
+    k = j + 1;
+  }
+  return parts.join(', ');
 }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';

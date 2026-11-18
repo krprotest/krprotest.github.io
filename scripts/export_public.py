@@ -31,6 +31,18 @@ missing = [c for c in PUBLIC_COLS if c not in idx]
 if missing:
     print("Master_DB에 없는 열:", missing); sys.exit(1)
 
+# Actors 탭: 이름·별칭 → 행위자 유형 (주최가 여럿일 때 단체마다 유형을 붙이기 위해)
+atype = {}
+try:
+    for ar in sh.worksheet("Actors").get_all_values()[1:]:
+        ar = ar + [""] * 4
+        if ar[0].strip() and ar[2].strip():
+            for nm in [ar[0]] + [x for x in ar[1].replace(";", ",").split(",")]:
+                if nm.strip():
+                    atype.setdefault(nm.strip(), ar[2].strip())
+except Exception as ex:
+    print("Actors 읽기 실패(유형 표시 생략):", ex)
+
 events, skipped = [], []
 for r in vals[1:]:
     r = r + [""] * len(head)
@@ -44,6 +56,11 @@ for r in vals[1:]:
     note = r[idx["note"]] if "note" in idx else ""
     if "[자택]" in note:
         e["location_spot"] = ""
+    orgs = [o.strip() for o in e["organizers"].split(",") if o.strip()]
+    if orgs:
+        e["organizer_types"] = [atype.get(o, "") for o in orgs]
+        if e["organizer_types"] and not e["organizer_types"][0]:
+            e["organizer_types"][0] = e["actor_type"]
     events.append(e)
 
 events.sort(key=lambda e: (e["start_date"], e["event_id"]))
