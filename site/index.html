@@ -330,7 +330,7 @@ function filtered(){
 // 주최: 행위자 유형은 첫 번째 단체(유형 판정 기준)에만 붙인다
 function orgLine(e){
   const orgs = String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
-  if (!orgs.length) return '미상' + (L.actor[e.actor_type] ? ` (${esc(L.actor[e.actor_type])})` : '');
+  if (!orgs.length) return '미상';
   const t = L.actor[e.actor_type] ? ` (${esc(L.actor[e.actor_type])})` : '';
   return esc(orgs[0]) + t + (orgs.length > 1 ? ', ' + orgs.slice(1).map(esc).join(', ') : '');
 }
