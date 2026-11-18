@@ -327,6 +327,13 @@ function filtered(){
     && (!f || e.start_date>=f) && (!t || e.start_date<=t) && (!a || e.action_primary===a)
     && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
 }
+// 주최: 행위자 유형은 첫 번째 단체(유형 판정 기준)에만 붙인다
+function orgLine(e){
+  const orgs = String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
+  if (!orgs.length) return '미상' + (L.actor[e.actor_type] ? ` (${esc(L.actor[e.actor_type])})` : '');
+  const t = L.actor[e.actor_type] ? ` (${esc(L.actor[e.actor_type])})` : '';
+  return esc(orgs[0]) + t + (orgs.length > 1 ? ', ' + orgs.slice(1).map(esc).join(', ') : '');
+}
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';
 const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};
@@ -354,7 +361,7 @@ function render(){
         <dt>사건 번호</dt><dd>${esc(e.event_id)}</dd>
         <dt>일시</dt><dd>${when}${e.time_info?` ${esc(e.time_info)}`:''}</dd>
         <dt>행동</dt><dd>${esc(L.action[e.action_primary]||'')}${e.action_secondary?` + ${esc(L.action[e.action_secondary]||e.action_secondary)}`:''} (${esc(e.mid_category)})</dd>
-        <dt>주최</dt><dd>${esc(e.organizers)||'미상'}${L.actor[e.actor_type]?` (${esc(L.actor[e.actor_type])})`:''}</dd>
+        <dt>주최</dt><dd>${orgLine(e)}</dd>
         <dt>정당 연계</dt><dd>${esc(L.party[e.party_link]||e.party_link)}${e.party_name?` (${esc(e.party_name)})`:''}</dd>
         <dt>규모</dt><dd>${size}</dd>
         <dt>장소</dt><dd>${esc(place)||'비해당'}</dd>
