@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>한국 보수·우파 항의행동 트래커</title>
 <meta name="robots" content="noindex, nofollow">
+<script>(function(){var l=null;try{l=new URLSearchParams(location.search).get('lang');}catch(e){}
+if(!l&&location.hash==='#english')l='en';if(!l){try{l=localStorage.getItem('krpt-lang');}catch(e){}}
+if(l==='en'){document.documentElement.lang='en';document.title='Korean Right-Wing Protest Tracker';}})();</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* 레이아웃: 좁은 상단 띠 + 탭, 본문은 좌측 필터 / 우측 목록. 색은 기록물(장부) 느낌의 차분한 청회색 + 적갈색 강조 */
@@ -68,7 +71,7 @@ p{max-width:68ch}
 .row.open .detail{display:block}
 .detail dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 14px;margin:0;font-size:14px}
 .detail dt{color:var(--muted)}
-.detail dd{margin:0;word-break:break-all}
+.detail dd{margin:0;overflow-wrap:anywhere}
 table{border-collapse:collapse;width:100%;font-size:14px;background:var(--panel)}
 th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 th{background:var(--chip);font-weight:500}
@@ -100,41 +103,47 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);
 .mail button{font:inherit;font-family:var(--sans);font-size:12px;margin-left:8px;padding:3px 8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:3px;cursor:pointer}
 .note{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;font-size:14px;margin:0 0 18px}
 .sec{display:none}.sec.on{display:block}
+html[lang="en"] .l-ko,html[lang="ko"] .l-en{display:none!important}
+.langsw{display:inline-flex;border:1px solid #6b4a3a;border-radius:3px;overflow:hidden;align-self:center}
+.langsw button{font:inherit;font-size:12px;padding:2px 9px;border:0;background:transparent;color:#c9c5bb;cursor:pointer}
+.langsw button+button{border-left:1px solid #6b4a3a}
+.langsw button.on{background:#f4f2ec;color:#1d2126;font-weight:500}
+.langsw button:focus-visible{outline:2px solid #f0c9a8;outline-offset:-2px}
 footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-size:13px;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.row{transition:border-color .15s}}
 </style>
 <script data-goatcounter="https://kr-right-protest.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
-
 <div class="band"><div class="in">
-  <div class="brand">한국 보수·우파 항의행동 트래커 <small>Korean Right-Wing Protest Tracker · 보수·우파 행위자의 항의행동 사건 데이터베이스</small></div>
-  <div class="proto">시범 운영 중 · 자료 축적 단계</div>
+  <div class="brand"><span class="l-ko">한국 보수·우파 항의행동 트래커 <small>Korean Right-Wing Protest Tracker · 보수·우파 행위자의 항의행동 사건 데이터베이스</small></span><span class="l-en">Korean Right-Wing Protest Tracker <small>한국 보수·우파 항의행동 트래커 · An event database of protest by conservative and right-wing actors</small></span></div>
+  <div class="proto"><span class="l-ko">시범 운영 중 · 자료 축적 단계</span><span class="l-en">Pilot phase · building the dataset</span></div>
+  <div class="langsw" role="group" aria-label="언어 / Language"><button type="button" data-lang="ko" lang="ko">한국어</button><button type="button" data-lang="en" lang="en">English</button></div>
 </div></div>
 <nav class="tabs"><div class="in">
-  <a href="#events" data-tab="events" class="on">사건 목록</a>
-  <a href="#stats" data-tab="stats">통계</a>
-  <a href="#method" data-tab="method">방법론</a>
-  <a href="#about" data-tab="about">소개</a>
-  <a href="#english" data-tab="english">English</a>
+  <a href="#events" data-tab="events" class="on"><span class="l-ko">사건 목록</span><span class="l-en">Events</span></a>
+  <a href="#stats" data-tab="stats"><span class="l-ko">통계</span><span class="l-en">Statistics</span></a>
+  <a href="#method" data-tab="method"><span class="l-ko">방법론</span><span class="l-en">Methodology</span></a>
+  <a href="#about" data-tab="about"><span class="l-ko">소개</span><span class="l-en">About</span></a>
 </div></nav>
 
 <main>
 <section class="sec on" id="sec-events">
-  <h1>사건 목록</h1>
-  <p class="lede">언론 보도로 확인된 보수·우파 행위자의 항의행동을 사건 단위로 기록합니다. 행을 누르면 상세와 출처가 펼쳐집니다.</p>
+  <h1><span class="l-ko">사건 목록</span><span class="l-en">Events</span></h1>
+  <p class="lede l-ko">언론 보도로 확인된 보수·우파 행위자의 항의행동을 사건 단위로 기록합니다. 행을 누르면 상세와 출처가 펼쳐집니다.</p>
+  <p class="lede l-en">Protest events by conservative and right-wing actors, as confirmed by news reports. Click a row to see details and sources. Event titles, organizations and places are given in Korean as reported.</p>
   <div class="kpis" id="kpis"></div>
   <div class="trend" id="trend-main"></div>
   <div class="wrap">
     <aside class="filters">
-      <label>검색<input id="q" type="search" placeholder="제목, 단체, 장소"></label>
-      <label>기간(부터)<input id="from" type="date"></label>
-      <label>기간(까지)<input id="to" type="date"></label>
-      <label>행동 유형<select id="f-action"><option value="">전체</option></select></label>
-      <label>의제<select id="f-issue"><option value="">전체</option></select></label>
-      <label>시도<select id="f-sido"><option value="">전체</option></select></label>
-      <label>행위자 유형<select id="f-actor"><option value="">전체</option></select></label>
-      <button id="reset" type="button">필터 지우기</button>
+      <label><span class="l-ko">검색</span><span class="l-en">Search</span><input id="q" type="search"></label>
+      <label><span class="l-ko">기간(부터)</span><span class="l-en">From</span><input id="from" type="date"></label>
+      <label><span class="l-ko">기간(까지)</span><span class="l-en">To</span><input id="to" type="date"></label>
+      <label><span class="l-ko">행동 유형</span><span class="l-en">Action type</span><select id="f-action"><option value=""></option></select></label>
+      <label><span class="l-ko">의제</span><span class="l-en">Issue</span><select id="f-issue"><option value=""></option></select></label>
+      <label><span class="l-ko">시도</span><span class="l-en">Province</span><select id="f-sido"><option value=""></option></select></label>
+      <label><span class="l-ko">행위자 유형</span><span class="l-en">Actor type</span><select id="f-actor"><option value=""></option></select></label>
+      <button id="reset" type="button"><span class="l-ko">필터 지우기</span><span class="l-en">Clear filters</span></button>
     </aside>
     <div>
       <div class="count"><span id="count"></span><span id="updated"></span></div>
@@ -145,17 +154,19 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
 </section>
 
 <section class="sec" id="sec-stats">
-  <h1>통계</h1>
-  <p class="lede">아래 수치는 현재 공개된 사건 전체를 집계한 것입니다. 필터와 무관합니다.</p>
-  <h2>추이</h2>
+  <h1><span class="l-ko">통계</span><span class="l-en">Statistics</span></h1>
+  <p class="lede l-ko">아래 수치는 현재 공개된 사건 전체를 집계한 것입니다. 필터와 무관합니다.</p>
+  <p class="lede l-en">Counts below cover all published events and do not depend on the filters.</p>
+  <h2><span class="l-ko">추이</span><span class="l-en">Trend</span></h2>
   <div class="trend" id="trend-stats"></div>
-  <h2>행동 유형별</h2><div class="bars" id="st-action"></div>
-  <h2>의제별</h2><div class="bars" id="st-issue"></div>
-  <h2>시도별</h2><div class="bars" id="st-sido"></div>
-  <h2>행위자 유형별</h2><div class="bars" id="st-actor"></div>
+  <h2><span class="l-ko">행동 유형별</span><span class="l-en">By action type</span></h2><div class="bars" id="st-action"></div>
+  <h2><span class="l-ko">의제별</span><span class="l-en">By issue (primary)</span></h2><div class="bars" id="st-issue"></div>
+  <h2><span class="l-ko">시도별</span><span class="l-en">By province</span></h2><div class="bars" id="st-sido"></div>
+  <h2><span class="l-ko">행위자 유형별</span><span class="l-en">By actor type (lead organizer)</span></h2><div class="bars" id="st-actor"></div>
 </section>
 
 <section class="sec" id="sec-method">
+<div class="l-ko">
   <h1>방법론</h1>
   <h2>분석 단위</h2>
   <p>보수·우파 행위자(단체, 정당, 소모임, 개인 등)가 공적 공간 또는 미디어를 통해 수행하는 개별 항의행동, 담화적 저항, 내부 동원·학습 사건. 1행 = 1사건. 여기서 '보수·우파'는 온건 보수에서 극우까지를 아우르는 넓은 뜻으로 쓰며, 항의행동도 거리 시위만이 아니라 성명·기자회견 같은 담화적 항의와 세미나·강연 같은 내부 동원 행사를 포함하는 넓은 뜻으로 씁니다. 행위자의 성향 판정은 사전에 정하지 않고 자료가 쌓인 뒤 행위자 유형·의제를 기준으로 분석합니다.</p>
@@ -185,9 +196,42 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <p>경찰 추산을 우선하고, 없으면 언론 보도, 주최 측 주장, 사진 기반 추정 순으로 기록하며 출처를 함께 표기합니다. 성명·서명·고소처럼 참가 인원 개념이 없는 행동은 '비해당'입니다.</p>
   <h2>한계</h2>
   <p>언론에 보도되지 않은 행동은 포착되지 않습니다. 보수 매체의 보도 관행에 따라 수도권과 특정 의제가 과대 대표될 수 있습니다. 인원 수치는 출처에 따라 신뢰도가 다르므로 size_source를 함께 보아야 합니다.</p>
+</div>
+<div class="l-en" lang="en">
+  <h1>Methodology</h1>
+  <h2>Unit of analysis</h2>
+  <p>An individual protest action, discursive protest, or internal mobilization event carried out by a conservative or right-wing actor (organization, party, small group or individual) in public space or through the media. One row is one event. 'Conservative and right-wing' is used broadly, from moderate conservatives to the far right. Protest is also used broadly: besides street demonstrations it includes discursive forms such as statements and press conferences, and internal mobilization events such as seminars and lectures. Actors are not classified by ideology in advance; analysis by actor type and issue follows once the data accumulate.</p>
+  <h2>Data collection</h2>
+  <p>Articles from about twenty conservative online outlets are collected automatically and screened with action and issue keywords. A researcher then reads each candidate article, decides whether it describes an event, and codes it by hand. Mainstream media reports are used to verify and supplement. Multiple reports of the same event are merged into one row with all sources listed.</p>
+  <h2>Action types (14 codes in 5 categories)</h2>
+  <div class="tablewrap"><table><tr><th>Category</th><th>Codes</th></tr>
+  <tr><td>Discursive</td><td>01 Statement / declaration · 02 Press conference · 03 Signature campaign / petition · 04 Legal complaint / accusation · 05 Picketing / leafleting</td></tr>
+  <tr><td>Demonstrative</td><td>06 Protest visit · 07 Rally / march · 08 One-person protest · 09 Hunger strike / head-shaving / blood writing · 13 Online collective action</td></tr>
+  <tr><td>Confrontational</td><td>10 Sit-in / occupation / obstruction / refusal · 14 Self-immolation / self-harm</td></tr>
+  <tr><td>Violent</td><td>11 Physical clash / property damage</td></tr>
+  <tr><td>Internal mobilization</td><td>12 Seminar / forum / lecture</td></tr></table></div>
+  <h2>Issues (11 codes, up to 3 per event)</h2>
+  <div class="tablewrap"><table><tr><th>Code</th><th>Issue</th><th>Examples</th></tr>
+  <tr><td>ISS-01</td><td>Election fraud claims</td><td>Abolishing early voting, hand counting, verification of election commission servers and ballots, calls for a special counsel or a re-run election</td></tr>
+  <tr><td>ISS-02</td><td>Anti-government and denunciation of politicians</td><td>Calls for the president's resignation or impeachment, condemnation of government policy, denunciation of politicians (including those within the conservative camp)</td></tr>
+  <tr><td>ISS-03</td><td>Judicial issues</td><td>Calls to resume politicians' trials, condemnation of court rulings, opposition to special counsels and investigations, opposition to prosecution and judicial reform, defense of the rule of law</td></tr>
+  <tr><td>ISS-04</td><td>Right-wing consolidation</td><td>Defense of former conservative governments and presidents, appeals for unity and disputes over the camp's direction, education and organizing of youth</td></tr>
+  <tr><td>ISS-05</td><td>Security, anti-communism, US–ROK alliance, North Korean human rights</td><td>Criticism of North Korea policy, campaigns against alleged spies and pro-North forces, strengthening the alliance, opposition to OPCON transfer, North Korean defectors' issues</td></tr>
+  <tr><td>ISS-06</td><td>Media issues</td><td>Opposition to government control of public broadcasters, condemnation of biased mainstream media and portals, opposition to restrictions on expression</td></tr>
+  <tr><td>ISS-07</td><td>Religion, family, anti-LGBTQ, education</td><td>Opposition to anti-discrimination law, same-sex marriage and pride events, anti-abortion and bioethics, student rights ordinances, sex education and textbooks, opposition to dissolving religious corporations</td></tr>
+  <tr><td>ISS-08</td><td>History, memory, national identity</td><td>Reassessment of the founding, Syngman Rhee and Park Chung-hee, visits to national cemeteries and battle sites, disputes over the May 18 uprising and 'comfort women'</td></tr>
+  <tr><td>ISS-09</td><td>Socio-economic, labor, welfare</td><td>Anti-union campaigns, criticism of health insurance, pension and welfare policy, tax cuts and deregulation</td></tr>
+  <tr><td>ISS-10</td><td>Anti-immigration, anti-multiculturalism, anti-China</td><td>Opposition to the Chinese Communist Party and to visa-free entry for Chinese nationals, foreigners' health insurance and voting rights, opposition to refugees and Islam</td></tr>
+  <tr><td>ISS-99</td><td>Other</td><td>Issues outside the categories above</td></tr></table></div>
+  <h2>Crowd size</h2>
+  <p>Police estimates are preferred; otherwise news reports, organizers' claims and photo-based estimates by the coder are used, in that order, with the source recorded. Actions without participants in the usual sense, such as statements, petitions and legal complaints, are coded as not applicable.</p>
+  <h2>Limitations</h2>
+  <p>Actions that were not reported in the news are not captured. Reporting practices of conservative outlets may over-represent the Seoul area and certain issues. Crowd sizes vary in reliability depending on the source, which is shown alongside each figure.</p>
+</div>
 </section>
 
 <section class="sec" id="sec-about">
+<div class="l-ko">
   <h1>소개</h1>
   <p>이 데이터베이스는 한국 보수·우파 진영(온건 보수에서 극우까지)의 항의행동을 사건 단위로 기록하는 비영리 연구 프로젝트입니다. 자료는 매일 자동으로 갱신되며, 검수를 마친 사건부터 공개됩니다.</p>
   <h2>정정·삭제 요청</h2>
@@ -196,22 +240,22 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <p>RSS 리더에 <a href="feed.xml">feed.xml</a>을 등록하면 새로 공개되는 사건을 받아볼 수 있습니다. 사건 목록에서 필터를 건 뒤 주소창의 주소를 복사하면 그 조건 그대로 다른 사람에게 보낼 수 있습니다.</p>
   <h2>자료 이용·인용 문의</h2>
   <p>자료를 연구·보도에 이용하거나 인용하려는 경우, 아래 이메일로 연락해 주십시오.</p>
-  <p class="mail"><span id="mail">rightactivitytracking@gmail.com</span> <button type="button" id="copymail">주소 복사</button></p>
+</div>
+<div class="l-en" lang="en">
+  <h1>About</h1>
+  <p>This is a non-profit research project that records the protest events of conservative and right-wing actors in South Korea (from moderate conservatives to the far right) as an event-level database, in the tradition of protest event analysis. The data are updated automatically every day, and events are published once they have been reviewed.</p>
+  <h2>Language</h2>
+  <p>In the English view, field names, codes and statistics are in English, while event titles, organizations, places, targets and outlet names remain in Korean as reported.</p>
+  <h2>Corrections and removal requests</h2>
+  <p>Factual errors are corrected once confirmed. Records based on published news reports are kept, but requests concerning personal information will be reviewed. Please send requests to the e-mail address below.</p>
+  <h2>Following new events</h2>
+  <p>Add <a href="feed.xml">feed.xml</a> to an RSS reader to receive newly published events. After setting filters on the events page, the address in the browser bar can be shared to show the same selection; add <code>?lang=en</code> to open the page in English.</p>
+  <h2>Use and citation</h2>
+  <p>If you wish to use or cite the data for research or reporting, please contact us by e-mail.</p>
+</div>
+  <p class="mail"><span id="mail">rightactivitytracking@gmail.com</span> <button type="button" id="copymail"></button></p>
 </section>
-<section class="sec" id="sec-english" lang="en">
-  <h1>Korean Right-Wing Protest Tracker</h1>
-  <p>This is a non-profit research project that records the protest events of conservative and right-wing actors in South Korea as an event-level database, in the tradition of protest event analysis. Protest is defined broadly to include discursive forms (statements, press conferences, petitions) and internal mobilization events (seminars, forums) alongside demonstrations. One row is one event. The data are updated automatically every day, and only events that have passed review are published.</p>
-  <h2>What is recorded</h2>
-  <p>Protest actions, discursive protests, and internal mobilization events carried out by conservative and right-wing actors (organizations, parties, small groups, individuals) in public space or through the media, as confirmed by news reports. Fourteen action codes are grouped into five categories: discursive (statements, press conferences, petitions, complaints, picketing), demonstrative (rallies and marches, one-person protests, protest visits, hunger strikes, online collective action), confrontational (sit-ins and occupations, self-immolation), violent (physical clashes), and internal mobilization (seminars, forums, lectures).</p>
-  <h2>How the data are collected</h2>
-  <p>Articles from about twenty conservative online outlets are collected automatically and screened with action and issue keywords. A researcher then reads each candidate article, decides whether it describes an event, and codes it by hand according to a published codebook. Mainstream media reports are used to verify and supplement. Multiple reports of the same event are merged into one row with all sources listed.</p>
-  <h2>Limitations</h2>
-  <p>Actions that were not reported in the news are not captured. Reporting practices of conservative outlets may over-represent the Seoul area and certain issues. Crowd sizes vary in reliability depending on the source, which is recorded alongside each figure.</p>
-  <h2>Use, citation and corrections</h2>
-  <p>If you wish to use or cite the data for research or reporting, or to request a correction, please contact us by e-mail.</p>
-  <p class="mail"><span>rightactivitytracking@gmail.com</span></p>
-</section>
-<footer>자료 갱신: <span id="updated2"></span> · 시범 운영 중입니다. 2026년 11월 11일부터 수집한 사건을 검수가 끝나는 대로 올립니다.</footer>
+<footer><span class="l-ko">자료 갱신: <span class="upd"></span> · 시범 운영 중입니다. 2026년 11월 11일부터 수집한 사건을 검수가 끝나는 대로 올립니다.</span><span class="l-en">Last updated: <span class="upd"></span> · Pilot phase. Events are posted as review is completed.</span></footer>
 </main>
 
 <script>
@@ -245,6 +289,25 @@ const L = {
  size:{"SX":"비해당","S0":"미상","S1":"1~9명","S2":"10~99명","S3":"100~999명","S4":"1,000~9,999명","S5":"1만 명 이상"},
  src:{"SRC1":"주류 언론","SRC2":"보수 매체","SRC3":"단체 채널","SRC4":"기타"}
 };
+const L_EN = {
+ action:{"01":"Statement / declaration","02":"Press conference","03":"Signature campaign / petition","04":"Legal complaint / accusation","05":"Picketing / leafleting","06":"Protest visit","07":"Rally / march","08":"One-person protest","09":"Hunger strike / head-shaving / blood writing","10":"Sit-in / occupation / obstruction","11":"Physical clash / property damage","12":"Seminar / forum / lecture","13":"Online collective action","14":"Self-immolation / self-harm"},
+ issue:{"ISS-01":"Election fraud claims","ISS-02":"Anti-government / denouncing politicians","ISS-03":"Judicial issues","ISS-04":"Right-wing consolidation","ISS-05":"Security, anti-communism, US–ROK alliance, NK human rights","ISS-06":"Media issues","ISS-07":"Religion, family, anti-LGBTQ, education","ISS-08":"History, memory, national identity","ISS-09":"Socio-economic, labor, welfare","ISS-10":"Anti-immigration, anti-multiculturalism, anti-China","ISS-99":"Other"},
+ actor:{"T1":"Formal civic organization","T2":"Religious organization","T3":"Professional / expert / academic group","T4":"Youth / student group","T5":"Parents' / education / women's group","T6":"YouTuber / new media","T7":"Political party","T8":"Small group / individual","T9":"Unknown"},
+ party:{"P0":"No party involvement","P1":"Party–civic group coalition","P2":"Party-only street action"},
+ size:{"SX":"Not applicable","S0":"Unknown","S1":"1–9","S2":"10–99","S3":"100–999","S4":"1,000–9,999","S5":"10,000 or more"}
+};
+const SIDO_EN = {"서울":"Seoul","부산":"Busan","대구":"Daegu","인천":"Incheon","광주":"Gwangju","대전":"Daejeon","울산":"Ulsan","세종":"Sejong","경기":"Gyeonggi","강원":"Gangwon","충북":"North Chungcheong","충남":"South Chungcheong","전북":"North Jeolla","전남":"South Jeolla","전남광주":"Jeonnam-Gwangju","경북":"North Gyeongsang","경남":"South Gyeongsang","제주":"Jeju","온라인":"Online","해외":"Overseas","비해당":"Not applicable","미상":"Unknown"};
+const SIZESRC_EN = {"경찰":"police","언론":"media","주최측":"organizers","코더추정":"coder estimate"};
+const CAT_EN = {"담화적":"Discursive","시위성":"Demonstrative","대결적":"Confrontational","폭력적":"Violent","내부동원":"Internal mobilization"};
+const TIME_EN = {"오전":"morning","오후":"afternoon","저녁":"evening","밤":"night","상설":"ongoing","종일":"all day"};
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let LANG = document.documentElement.lang === 'en' ? 'en' : 'ko';
+const tr = (ko, en) => LANG === 'en' ? en : ko;
+const LB = g => LANG === 'en' ? Object.assign({}, L[g], L_EN[g]) : L[g];
+const sidoName = v => LANG === 'en' ? (SIDO_EN[v] || v) : v;
+const catName = c => LANG === 'en' ? (CAT_EN[c] || c) : c;
+const timeName = t => LANG === 'en' ? (TIME_EN[t] || t) : t;
+const num = n => Number(n).toLocaleString(LANG === 'en' ? 'en-US' : 'ko-KR');
 const $ = s => document.querySelector(s);
 let DATA = null, EVENTS = [];
 
@@ -253,10 +316,7 @@ async function load(){
   try { const r = await fetch('events.json', {cache:'no-store'}); if (r.ok) { DATA = await r.json(); } } catch(e) {}
   if (!DATA) DATA = window.SAMPLE;
   EVENTS = DATA.events.slice().sort((a,b)=> (b.start_date||'').localeCompare(a.start_date||'') || a.event_id.localeCompare(b.event_id));
-  $('#updated').textContent = '자료 갱신 ' + DATA.generated_at; $('#updated2').textContent = DATA.generated_at;
-  fillSelect('#f-action', L.action, uniq('action_primary')); fillSelect('#f-issue', L.issue, uniq('issue_1'));
-  fillSelect('#f-sido', null, uniq('region_sido')); fillSelect('#f-actor', L.actor, uniq('actor_type'));
-  readURL(); kpis(); render(); stats(); renderTrends(); route();
+  fillFilters(); readURL(); applyLang(); route();
 }
 
 // ---- 주간·월간 추이 그래프 (중분류별 누적 막대) ----
@@ -282,7 +342,8 @@ function realBuckets(mode){
   return mode==='day' ? out.slice(-60) : out;
 }
 function wk(k){ const e=shiftKey(k,'day',6); return Number(k.slice(5,7))+'.'+Number(k.slice(8,10))+'.~'+Number(e.slice(5,7))+'.'+Number(e.slice(8,10))+'.'; }
-function label(k, mode){ return mode==='month' ? (Number(k.slice(5,7))+'월') : (Number(k.slice(5,7))+'/'+Number(k.slice(8,10))); }
+function label(k, mode){ const m = Number(k.slice(5,7)); return mode==='month' ? tr(m+'월', MONTHS[m-1]) : (m+'/'+Number(k.slice(8,10))); }
+function trendName(){ return TMODE==='month' ? tr('월별 사건 수','Events per month') : TMODE==='day' ? tr('일별 사건 수','Events per day') : tr('주별(월~일) 사건 수','Events per week (Mon–Sun)'); }
 function niceStep(max){ const raw = max/4, p = Math.pow(10, Math.floor(Math.log10(raw||1))), m = raw/p; return Math.max(1, (m<=1?1:m<=2?2:m<=5?5:10)*p); }
 function drawTrend(el){
   const data = realBuckets(TMODE);
@@ -291,34 +352,38 @@ function drawTrend(el){
   const max = Math.max(1, ...tot), step = niceStep(max), top = Math.ceil(max/step)*step;
   const bw = iw/Math.max(1,data.length), gap = Math.max(Math.min(8, bw*0.28), bw-56);  // 막대 최대 56px
   const every = Math.max(1, Math.ceil(data.length/(TMODE==='month'?12:TMODE==='day'?10:9)));
-  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${TMODE==='month'?'월별':TMODE==='day'?'일별':'주별(월~일)'} 사건 수 막대그래프">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${trendName()}">`;
   for (let v=0; v<=top; v+=step){ const y = mt+ih-(v/top)*ih;
     svg += `<line class="${v===0?'base':'grid'}" x1="${ml}" x2="${W-mr}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"/><text x="${ml-6}" y="${(y+4).toFixed(1)}" text-anchor="end">${v}</text>`; }
   data.forEach((d,i) => { let y = mt+ih; const x = ml+i*bw+gap/2, w = Math.max(1, bw-gap);
     CATS.forEach(([c,tok]) => { const v = d.c[c]||0; if (!v) return; const h = v/top*ih; y -= h;
-      svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="fill:var(${tok})"><title>${TMODE==='month'?d.key:TMODE==='day'?d.key:wk(d.key)} · ${c} ${v}건 (합계 ${tot[i]}건)</title></rect>`; });
+      svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" style="fill:var(${tok})"><title>${TMODE==='week'?wk(d.key):d.key} · ${catName(c)} ${v}${tr('건','')} (${tr('합계','total')} ${tot[i]}${tr('건','')})</title></rect>`; });
     if (i % every === 0) svg += `<text x="${(ml+i*bw+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${label(d.key,TMODE)}</text>`;
     if (TMODE==='month' && tot[i]) svg += `<text x="${(ml+i*bw+bw/2).toFixed(1)}" y="${(mt+ih-tot[i]/top*ih-4).toFixed(1)}" text-anchor="middle">${tot[i]}</text>`;
   });
   svg += '</svg>';
   const sum = tot.reduce((a,b)=>a+b, 0);
   const lastK = data.length ? data[data.length-1].key : ''; const range = data.length ? `${data[0].key} ~ ${TMODE==='week'?shiftKey(lastK,'day',6):lastK}` : '';
-  el.innerHTML = `<div class="trend-head"><b>${TMODE==='month'?'월별':TMODE==='day'?'일별':'주별(월~일)'} 사건 수<span class="sub">${range}</span></b>
-    <span class="ctrls"><span class="seg" role="group" aria-label="단위"><button type="button" data-mode="day" class="${TMODE==='day'?'on':''}">일간</button><button type="button" data-mode="week" class="${TMODE==='week'?'on':''}">주간</button><button type="button" data-mode="month" class="${TMODE==='month'?'on':''}">월간</button></span></span></div>
-    <div class="chartbox">${data.length ? svg : '<p class="lede">그릴 자료가 없습니다.</p>'}</div>
-    <div class="legend">${CATS.map(([c,t]) => `<span><i style="background:var(${t})"></i>${c}</span>`).join('')}<span class="tot">합계 ${sum.toLocaleString()}건</span></div>`;
+  el.innerHTML = `<div class="trend-head"><b>${trendName()}<span class="sub">${range}</span></b>
+    <span class="ctrls"><span class="seg" role="group" aria-label="${tr('단위','Unit')}"><button type="button" data-mode="day" class="${TMODE==='day'?'on':''}">${tr('일간','Daily')}</button><button type="button" data-mode="week" class="${TMODE==='week'?'on':''}">${tr('주간','Weekly')}</button><button type="button" data-mode="month" class="${TMODE==='month'?'on':''}">${tr('월간','Monthly')}</button></span></span></div>
+    <div class="chartbox">${data.length ? svg : `<p class="lede">${tr('그릴 자료가 없습니다.','No data to plot.')}</p>`}</div>
+    <div class="legend">${CATS.map(([c,t]) => `<span><i style="background:var(${t})"></i>${catName(c)}</span>`).join('')}<span class="tot">${tr('합계 '+num(sum)+'건', 'Total '+num(sum))}</span></div>`;
 }
 function renderTrends(){ ['#trend-main','#trend-stats'].forEach(s => drawTrend($(s))); }
 document.addEventListener('click', ev => { const b = ev.target.closest('.trend button'); if (!b) return;
   if (b.dataset.mode) TMODE = b.dataset.mode; renderTrends(); });
 function uniq(k){ return [...new Set(EVENTS.map(e=>e[k]).filter(Boolean))].sort(); }
-function fillSelect(sel, labels, vals){ const s=$(sel); vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=labels?`${v} ${labels[v]||''}`:v; s.appendChild(o);}); }
+function fillSelect(sel, labels, vals, nameFn){ const s=$(sel), keep=s.value; s.innerHTML='';
+  const all=document.createElement('option'); all.value=''; all.textContent=tr('전체','All'); s.appendChild(all);
+  vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=labels?`${v} ${labels[v]||''}`:(nameFn?nameFn(v):v); s.appendChild(o);}); s.value=keep; }
+function fillFilters(){ fillSelect('#f-action', LB('action'), uniq('action_primary')); fillSelect('#f-issue', LB('issue'), uniq('issue_1'));
+  fillSelect('#f-sido', null, uniq('region_sido'), sidoName); fillSelect('#f-actor', LB('actor'), uniq('actor_type')); }
 function kpis(){
   const n=EVENTS.length, protest=EVENTS.filter(e=>e.mid_category!=='내부동원').length;
   const orgs=new Set(EVENTS.flatMap(e=>e.organizers.split(',').map(s=>s.trim()).filter(Boolean))).size;
   const outdoor=EVENTS.filter(e=>['06','07','08','09','10','11'].includes(e.action_primary)).length;
   const dates=EVENTS.map(e=>e.start_date).filter(Boolean).sort();
-  $('#kpis').innerHTML=[[n,'공개 사건'],[outdoor,'거리 행동'],[protest,'항의 사건(내부동원 제외)'],[orgs,'행위자(단체·개인)'],[dates[0]+' ~ '+dates[dates.length-1],'수록 기간']]
+  $('#kpis').innerHTML=[[n,tr('공개 사건','Published events')],[outdoor,tr('거리 행동','Street actions')],[protest,tr('항의 사건(내부동원 제외)','Protest events (excl. internal mobilization)')],[orgs,tr('행위자(단체·개인)','Actors (groups and individuals)')],[dates[0]+' ~ '+dates[dates.length-1],tr('수록 기간','Period covered')]]
     .map(([b,s])=>`<div class="kpi${String(b).length>8?' sm':''}"><b>${b}</b><span>${s}</span></div>`).join('');
 }
 function filtered(){
@@ -330,14 +395,14 @@ function filtered(){
 // 주최: 단체마다 행위자 유형을 붙이되, 이어지는 단체의 유형이 같으면 묶어서 한 번만 표시
 function orgLine(e){
   const orgs = String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
-  if (!orgs.length) return '미상';
+  if (!orgs.length) return tr('미상','Unknown');
   const types = Array.isArray(e.organizer_types) && e.organizer_types.length === orgs.length
     ? e.organizer_types : orgs.map((_, k) => k === 0 ? e.actor_type : '');
   const parts = []; let k = 0;
   while (k < orgs.length) {
     let j = k; while (j + 1 < orgs.length && types[j + 1] === types[k]) j++;
     const names = orgs.slice(k, j + 1).map(esc).join(', ');
-    parts.push(names + (L.actor[types[k]] ? ` (${esc(L.actor[types[k]])})` : ''));
+    const AL = LB('actor'); parts.push(names + (AL[types[k]] ? ` (${esc(AL[types[k]])})` : ''));
     k = j + 1;
   }
   return parts.join(', ');
@@ -346,48 +411,63 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';
 const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};
 function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; }
-function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (OPEN_ID) u.set('id', OPEN_ID);
+function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (OPEN_ID) u.set('id', OPEN_ID); if (LANG === 'en') u.set('lang', 'en');
   const qs = u.toString(); try { history.replaceState(null, '', (qs ? '?' + qs : location.pathname) + location.hash); } catch(e) {} }
 function render(){
-  const all=filtered(); $('#count').textContent=`${all.length}건 / 전체 ${EVENTS.length}건`;
+  const all=filtered(); $('#count').textContent=tr(`${all.length}건 / 전체 ${EVENTS.length}건`, `${all.length} of ${EVENTS.length} events`);
+  const AC = LB('action'), IS = LB('issue'), PA = LB('party'), SZ = LB('size');
   const rows = all.slice(0, LIMIT);
   const more = $('#more'); more.hidden = all.length <= LIMIT;
-  if (!more.hidden) more.textContent = `이전 사건 더 보기 (${all.length - LIMIT}건 남음)`;
+  if (!more.hidden) more.textContent = tr(`이전 사건 더 보기 (${all.length - LIMIT}건 남음)`, `Show earlier events (${all.length - LIMIT} more)`);
   writeURL();
   $('#list').innerHTML = rows.map(e=>{
-    const when = e.end_date && e.end_date!==e.start_date ? `${e.start_date} ~ ${e.end_date}` : (e.start_date + (e.end_date? '' : ' ~ 진행 중'));
-    const place = [e.region_sido, e.region_sigungu, e.location_spot].filter(x=>x && x!=='비해당').join(' ');
-    const issues=[e.issue_1,e.issue_2,e.issue_3].filter(Boolean).map(x=>`<span class="chip">${esc(L.issue[x]||x)}</span>`).join('');
-    const size = e.size_raw ? `${Number(e.size_raw).toLocaleString()}명 (${esc(e.size_source)})` : (L.size[e.size_scale]||'');
+    const when = e.end_date && e.end_date!==e.start_date ? `${e.start_date} ~ ${e.end_date}` : (e.start_date + (e.end_date? '' : tr(' ~ 진행 중',' – ongoing')));
+    const place = [e.region_sido && e.region_sido!=='비해당' ? sidoName(e.region_sido) : '', e.region_sigungu, e.location_spot].filter(x=>x && x!=='비해당').join(' ');
+    const issues=[e.issue_1,e.issue_2,e.issue_3].filter(Boolean).map(x=>`<span class="chip">${esc(IS[x]||x)}</span>`).join('');
+    const size = e.size_raw ? (isNaN(Number(e.size_raw)) ? esc(e.size_raw) : tr(`${num(e.size_raw)}명`, num(e.size_raw))) + (e.size_source ? ` (${esc(LANG==='en'?(SIZESRC_EN[e.size_source]||e.size_source):e.size_source)})` : '') : (SZ[e.size_scale]||'');
     const srcs = e.source_url.split(';').map(s=>s.trim()).filter(Boolean); const medias=e.source_media.split(';').map(s=>s.trim()).filter(Boolean);
-    const host = u=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(_){ return '출처'; } };
+    const host = u=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(_){ return tr('출처','source'); } };
     const links = srcs.map((u,k)=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(medias.length===srcs.length?medias[k]:(medias[k]||host(u)))}</a>`).join(', ');
     return `<div class="row" tabindex="0" data-id="${esc(e.event_id)}">
       <div class="top"><span class="date">${when}</span><span class="title">${esc(e.event_title)}</span></div>
-      <div class="meta"><span class="chip act">${esc(L.action[e.action_primary]||e.action_primary)}</span>${e.organizers?`<span class="chip">${esc(e.organizers)}</span>`:''}${place?`<span class="chip">${esc(place)}</span>`:''}${issues}</div>
+      <div class="meta"><span class="chip act">${esc(AC[e.action_primary]||e.action_primary)}</span>${e.organizers?`<span class="chip">${esc(e.organizers)}</span>`:''}${place?`<span class="chip">${esc(place)}</span>`:''}${issues}</div>
       <div class="detail"><dl>
-        <dt>사건 번호</dt><dd>${esc(e.event_id)}</dd>
-        <dt>일시</dt><dd>${when}${e.time_info?` ${esc(e.time_info)}`:''}</dd>
-        <dt>행동</dt><dd>${esc(L.action[e.action_primary]||'')}${e.action_secondary?` + ${esc(L.action[e.action_secondary]||e.action_secondary)}`:''} (${esc(e.mid_category)})</dd>
-        <dt>주최</dt><dd>${orgLine(e)}</dd>
-        <dt>정당 연계</dt><dd>${esc(L.party[e.party_link]||e.party_link)}${e.party_name?` (${esc(e.party_name)})`:''}</dd>
-        <dt>규모</dt><dd>${size}</dd>
-        <dt>장소</dt><dd>${esc(place)||'비해당'}</dd>
-        <dt>대상</dt><dd>${esc(e.target_entity)}</dd>
-        <dt>출처</dt><dd>${links}</dd>
+        <dt>${tr('사건 번호','Event ID')}</dt><dd>${esc(e.event_id)}</dd>
+        <dt>${tr('일시','Date')}</dt><dd>${when}${e.time_info?` ${esc(timeName(e.time_info))}`:''}</dd>
+        <dt>${tr('행동','Action')}</dt><dd>${esc(AC[e.action_primary]||'')}${e.action_secondary?` + ${esc(AC[e.action_secondary]||e.action_secondary)}`:''} (${esc(catName(e.mid_category))})</dd>
+        <dt>${tr('주최','Organizers')}</dt><dd>${orgLine(e)}</dd>
+        <dt>${tr('정당 연계','Party link')}</dt><dd>${esc(PA[e.party_link]||e.party_link)}${e.party_name?` (${esc(e.party_name)})`:''}</dd>
+        <dt>${tr('규모','Size')}</dt><dd>${size}</dd>
+        <dt>${tr('장소','Place')}</dt><dd>${esc(place)||tr('비해당','Not applicable')}</dd>
+        <dt>${tr('대상','Target')}</dt><dd>${esc(e.target_entity)}</dd>
+        <dt>${tr('출처','Sources')}</dt><dd>${links}</dd>
       </dl></div></div>`;
-  }).join('') || '<p class="lede">조건에 맞는 사건이 없습니다.</p>';
+  }).join('') || `<p class="lede">${tr('조건에 맞는 사건이 없습니다.','No events match these filters.')}</p>`;
   if (OPEN_ID) { const r = document.querySelector(`.row[data-id="${CSS.escape(OPEN_ID)}"]`); if (r) { r.classList.add('open'); r.scrollIntoView({block:'center'}); } }
 }
 $('#more').onclick = () => { LIMIT += PAGE; render(); };
-function bars(sel, key, labels, multi){
+function bars(sel, key, labels, nameFn){
   const c={}; EVENTS.forEach(e=>{ const v=e[key]; if(v) c[v]=(c[v]||0)+1; });
   const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]); const max=arr[0]?arr[0][1]:1;
-  $(sel).innerHTML=arr.map(([k,v])=>`<span>${esc(labels?(labels[k]||k):k)}</span><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
+  $(sel).innerHTML=arr.map(([k,v])=>`<span>${esc(labels?(labels[k]||k):(nameFn?nameFn(k):k))}</span><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
 }
-function stats(){ bars('#st-action','action_primary',L.action); bars('#st-issue','issue_1',L.issue); bars('#st-sido','region_sido',null); bars('#st-actor','actor_type',L.actor); }
+function stats(){ bars('#st-action','action_primary',LB('action')); bars('#st-issue','issue_1',LB('issue')); bars('#st-sido','region_sido',null,sidoName); bars('#st-actor','actor_type',LB('actor')); }
+// 언어 전환: 고정 문구는 .l-ko / .l-en 으로 숨기고, 화면에서 만드는 문구는 다시 그린다
+function applyLang(){
+  document.documentElement.lang = LANG;
+  document.title = tr('한국 보수·우파 항의행동 트래커', 'Korean Right-Wing Protest Tracker');
+  document.querySelectorAll('.langsw button').forEach(b => { b.classList.toggle('on', b.dataset.lang === LANG); b.setAttribute('aria-pressed', b.dataset.lang === LANG); });
+  $('#q').placeholder = tr('제목, 단체, 장소', 'Title, organization, place (in Korean)');
+  $('#updated').textContent = tr('자료 갱신 ', 'Updated ') + DATA.generated_at;
+  document.querySelectorAll('.upd').forEach(x => x.textContent = DATA.generated_at);
+  $('#copymail').textContent = tr('주소 복사', 'Copy address');
+  fillFilters(); kpis(); render(); stats(); renderTrends();
+}
+function setLang(l){ LANG = l === 'en' ? 'en' : 'ko'; try { localStorage.setItem('krpt-lang', LANG); } catch(e) {} applyLang(); }
+document.querySelectorAll('.langsw button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
 function route(){
-  const h=(location.hash||'#events').slice(1); const ok=['events','stats','method','about','english'].includes(h)?h:'events';
+  let h=(location.hash||'#events').slice(1); if (h==='english') { if (LANG!=='en') setLang('en'); h='about'; try { history.replaceState(null,'',location.pathname+location.search+'#about'); } catch(e) {} }
+  const ok=['events','stats','method','about'].includes(h)?h:'events';
   document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on', s.id==='sec-'+ok));
   document.querySelectorAll('nav.tabs a').forEach(a=>a.classList.toggle('on', a.dataset.tab===ok));
 }
@@ -396,9 +476,9 @@ addEventListener('hashchange', route);
 $('#reset').onclick=()=>{ ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).value=''); LIMIT = PAGE; OPEN_ID=''; render(); };
 $('#list').addEventListener('click', ev=>{ const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) { r.classList.toggle('open'); OPEN_ID = r.classList.contains('open') ? r.dataset.id : ''; writeURL(); } });
 $('#list').addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ const r=ev.target.closest('.row'); if(r) r.classList.toggle('open'); }});
-$('#copymail').onclick=async ()=>{ const b=$('#copymail'); try{ await navigator.clipboard.writeText($('#mail').textContent); b.textContent='복사됨'; }
-  catch(e){ const r=document.createRange(); r.selectNodeContents($('#mail')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent='Ctrl+C로 복사'; }
-  setTimeout(()=>b.textContent='주소 복사',2000); };
+$('#copymail').onclick=async ()=>{ const b=$('#copymail'); try{ await navigator.clipboard.writeText($('#mail').textContent); b.textContent=tr('복사됨','Copied'); }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($('#mail')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent=tr('Ctrl+C로 복사','Press Ctrl+C'); }
+  setTimeout(()=>b.textContent=tr('주소 복사','Copy address'),2000); };
 load();
 </script>
 </body>
