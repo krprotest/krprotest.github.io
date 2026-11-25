@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>한국 보수·우파 항의행동 트래커</title>
+<title>한국 보수·우파 항의행동 데이터베이스</title>
 <meta name="robots" content="noindex, nofollow">
 <script>(function(){var l=null;try{l=new URLSearchParams(location.search).get('lang');}catch(e){}
 if(!l&&location.hash==='#english')l='en';if(!l){try{l=localStorage.getItem('krpt-lang');}catch(e){}}
@@ -118,7 +118,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
 </head>
 <body>
 <div class="band"><div class="in">
-  <div class="brand"><span class="l-ko">한국 보수·우파 항의행동 트래커 <small>Korean Right-Wing Protest Tracker · 보수·우파 행위자의 항의행동 사건 데이터베이스</small></span><span class="l-en">Korean Right-Wing Protest Tracker <small>한국 보수·우파 항의행동 트래커 · An event database of protest by conservative and right-wing actors</small></span></div>
+  <div class="brand"><span class="l-ko">한국 보수·우파 항의행동 데이터베이스 <small>Korean Right-Wing Protest Tracker · 언론 보도로 확인한 보수·우파 행위자의 항의행동 사건 기록</small></span><span class="l-en">Korean Right-Wing Protest Tracker <small>한국 보수·우파 항의행동 데이터베이스 · An event database of protest by conservative and right-wing actors</small></span></div>
   <div class="proto"><span class="l-ko">시범 운영 중 · 자료 축적 단계</span><span class="l-en">Pilot phase · building the dataset</span></div>
   <div class="langsw" role="group" aria-label="언어 / Language"><button type="button" data-lang="ko" lang="ko">한국어</button><button type="button" data-lang="en" lang="en">English</button></div>
 </div></div>
@@ -457,7 +457,7 @@ function stats(){ bars('#st-action','action_primary',LB('action')); bars('#st-is
 // 언어 전환: 고정 문구는 .l-ko / .l-en 으로 숨기고, 화면에서 만드는 문구는 다시 그린다
 function applyLang(){
   document.documentElement.lang = LANG;
-  document.title = tr('한국 보수·우파 항의행동 트래커', 'Korean Right-Wing Protest Tracker');
+  document.title = tr('한국 보수·우파 항의행동 데이터베이스', 'Korean Right-Wing Protest Tracker');
   document.querySelectorAll('.langsw button').forEach(b => { b.classList.toggle('on', b.dataset.lang === LANG); b.setAttribute('aria-pressed', b.dataset.lang === LANG); });
   $('#q').placeholder = tr('제목, 단체, 장소', 'Title, organization, place (in Korean)');
   $('#updated').textContent = tr('자료 갱신 ', 'Updated ') + DATA.generated_at;

@@ -1,4 +1,4 @@
-# 한국 우파 항의행동 트래커 · Korean Right-Wing Protest Tracker
+# 한국 보수·우파 항의행동 데이터베이스 · Korean Right-Wing Protest Tracker
 
 우파 행위자의 집합적 항의행동 사건 데이터베이스의 공개 사이트입니다.
 매일 아침 검수가 끝난(Approved) 사건만 `site/events.json`으로 내보내 GitHub Pages에 올립니다.

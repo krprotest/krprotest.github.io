@@ -87,7 +87,7 @@ for ev in sorted(events, key=lambda x: (x["start_date"], x["event_id"]), reverse
                  f"<pubDate>{pub}</pubDate><description>{_x(desc)}</description></item>")
 with open(os.path.join(OUT_DIR, "feed.xml"), "w", encoding="utf-8") as f:
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>'
-            f"<title>한국 보수·우파 항의행동 트래커</title><link>{SITE}</link>"
+            f"<title>한국 보수·우파 항의행동 데이터베이스</title><link>{SITE}</link>"
             f"<description>새로 공개된 사건</description><lastBuildDate>{datetime.now(KST).strftime('%a, %d %b %Y %H:%M:%S +0900')}</lastBuildDate>"
             + "".join(items) + "</channel></rss>")
 # CSV 내려받기는 당분간 제공하지 않는다(자료 이용은 이메일 문의).
