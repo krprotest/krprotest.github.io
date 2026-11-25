@@ -69,7 +69,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 with open(os.path.join(OUT_DIR, "events.json"), "w", encoding="utf-8") as f:
     json.dump({"generated_at": now, "count": len(events), "events": events}, f, ensure_ascii=False, indent=1)
 # RSS 피드: 최근 공개 사건 50건
-SITE = "https://rightactivitytracking.github.io/kr-right-protest/"
+SITE = "https://krprotest.github.io/"
 AL = {"01":"성명·시국선언","02":"기자회견","03":"서명·청원","04":"고소·고발·진정","05":"피케팅·선전전","06":"항의방문","07":"집회·행진",
       "08":"1인시위","09":"단식·삭발·혈서","10":"농성·점거·방해","11":"물리적 충돌·파괴","12":"세미나·토론회","13":"온라인 집단행동","14":"분신·자해"}
 def _x(t):
