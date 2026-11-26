@@ -47,6 +47,11 @@ p{max-width:68ch}
 .kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.1}
 .kpi span{font-size:12px;color:var(--muted)}
 .kpi.sm b{font-size:15px;line-height:1.35;font-family:var(--mono);padding-block:4px}
+button.kpi{font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s}
+button.kpi:hover{border-color:var(--accent)}
+button.kpi[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+button.kpi:focus-visible,button.chip:focus-visible,.active button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.kpi span::after{content:" →";opacity:.5}
 .wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:18px}
 @media (max-width:760px){.wrap{grid-template-columns:1fr}}
 .filters{display:flex;flex-direction:column;gap:12px}
@@ -65,6 +70,14 @@ p{max-width:68ch}
 .row .date{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap}
 .row .title{font-weight:500;flex:1 1 240px;min-width:0}
 .row .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+button.chip{font:inherit;font-size:12px;border:1px solid transparent;cursor:pointer;line-height:1.5}
+button.chip:hover{border-color:var(--accent);text-decoration:underline}
+.active{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px;font-size:13px}
+.active[hidden]{display:none}
+.active .lab{color:var(--muted)}
+.active button{font:inherit;font-size:12px;padding:2px 6px 2px 9px;border-radius:999px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);cursor:pointer}
+.active button b{font-weight:400;margin-left:4px}
+.active .clear{border-color:var(--line);background:transparent;color:var(--muted);padding:2px 9px}
 .chip{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--fg)}
 .chip.act{background:var(--accent-soft);color:var(--accent);font-weight:500}
 .detail{display:none;margin-top:12px;border-top:1px dashed var(--line);padding-top:10px}
@@ -149,6 +162,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
     </aside>
     <div>
       <div class="count"><span id="count"></span><span id="updated"></span></div>
+      <div class="active" id="active" hidden></div>
       <div class="list" id="list"></div>
       <button type="button" class="more" id="more" hidden></button>
     </div>
@@ -378,21 +392,55 @@ function uniq(k){ return [...new Set(EVENTS.map(e=>e[k]).filter(Boolean))].sort(
 function fillSelect(sel, labels, vals, nameFn){ const s=$(sel), keep=s.value; s.innerHTML='';
   const all=document.createElement('option'); all.value=''; all.textContent=tr('전체','All'); s.appendChild(all);
   vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=labels?`${v} ${labels[v]||''}`:(nameFn?nameFn(v):v); s.appendChild(o);}); s.value=keep; }
-function fillFilters(){ fillSelect('#f-action', LB('action'), uniq('action_primary')); fillSelect('#f-issue', LB('issue'), uniq('issue_1'));
+function fillFilters(){ fillSelect('#f-action', LB('action'), uniq('action_primary')); fillSelect('#f-issue', LB('issue'), [...new Set(EVENTS.flatMap(e=>[e.issue_1,e.issue_2,e.issue_3]).filter(Boolean))].sort());
   fillSelect('#f-sido', null, uniq('region_sido'), sidoName); fillSelect('#f-actor', LB('actor'), uniq('actor_type')); }
 function kpis(){
   const n=EVENTS.length, protest=EVENTS.filter(e=>e.mid_category!=='내부동원').length;
   const orgs=new Set(EVENTS.flatMap(e=>e.organizers.split(',').map(s=>s.trim()).filter(Boolean))).size;
-  const outdoor=EVENTS.filter(e=>['06','07','08','09','10','11'].includes(e.action_primary)).length;
+  const outdoor=EVENTS.filter(isStreet).length;
   const dates=EVENTS.map(e=>e.start_date).filter(Boolean).sort();
-  $('#kpis').innerHTML=[[n,tr('공개 사건','Published events')],[outdoor,tr('거리 행동','Street actions')],[protest,tr('항의 사건(내부동원 제외)','Protest events (excl. internal mobilization)')],[orgs,tr('행위자(단체·개인)','Actors (groups and individuals)')],[dates[0]+' ~ '+dates[dates.length-1],tr('수록 기간','Period covered')]]
-    .map(([b,s])=>`<div class="kpi${String(b).length>8?' sm':''}"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#kpis').innerHTML=[[n,tr('공개 사건','Published events'),'all'],[outdoor,tr('거리 행동','Street actions'),'street'],[protest,tr('항의 사건(내부동원 제외)','Protest events (excl. internal mobilization)'),'protest'],[orgs,tr('행위자(단체·개인)','Actors (groups and individuals)')],[dates[0]+' ~ '+dates[dates.length-1],tr('수록 기간','Period covered')]]
+    .map(([b,s,k])=> k ? `<button type="button" class="kpi" data-scope="${k}" aria-pressed="${k==='all'?(!anyFilter()):(SCOPE===k)}" title="${tr('눌러서 이 사건만 보기','Click to show these events')}"><b>${b}</b><span>${s}</span></button>`
+                       : `<div class="kpi${String(b).length>8?' sm':''}"><b>${b}</b><span>${s}</span></div>`).join('');
 }
 function filtered(){
   const q=$('#q').value.trim(), f=$('#from').value, t=$('#to').value, a=$('#f-action').value, i=$('#f-issue').value, s=$('#f-sido').value, ac=$('#f-actor').value;
-  return EVENTS.filter(e=> (!q || (e.event_title+e.organizers+e.location_spot+e.target_entity).includes(q))
+  return EVENTS.filter(e=> (!ORG || orgList(e).includes(ORG)) && (!SIGUNGU || e.region_sigungu===SIGUNGU)
+    && (SCOPE!=='street' || isStreet(e)) && (SCOPE!=='protest' || e.mid_category!=='내부동원')
+    && (!q || (e.event_title+e.organizers+e.location_spot+e.target_entity).includes(q))
     && (!f || e.start_date>=f) && (!t || e.start_date<=t) && (!a || e.action_primary===a)
     && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
+}
+// 태그·카드로 거는 조건 (주소에도 남는다)
+let ORG = '', SIGUNGU = '', SCOPE = '';
+const STREET = ['06','07','08','09','10','11'];
+const isStreet = e => STREET.includes(e.action_primary);
+const orgList = e => String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
+const FSEL = ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'];
+function anyFilter(){ return !!(ORG || SIGUNGU || SCOPE || FSEL.some(x => $(x).value)); }
+function clearAll(){ FSEL.forEach(x => $(x).value=''); ORG=''; SIGUNGU=''; SCOPE=''; }
+function applyTag(f, v, v2){
+  if (f==='action') $('#f-action').value = v;
+  else if (f==='issue') $('#f-issue').value = v;
+  else if (f==='org') ORG = v;
+  else if (f==='place') { $('#f-sido').value = v; SIGUNGU = v2 || ''; }
+  LIMIT = PAGE; OPEN_ID = ''; render(); kpis();
+  const c = $('#count'); if (c && c.getBoundingClientRect().top < 0) c.scrollIntoView({block:'start'});
+}
+function activeBar(){
+  const AC = LB('action'), IS = LB('issue'), AT = LB('actor'), items = [];
+  const v = x => $(x).value;
+  if (SCOPE) items.push(['scope', SCOPE==='street' ? tr('거리 행동','Street actions') : tr('항의 사건(내부동원 제외)','Protest events')]);
+  if (ORG) items.push(['org', tr('주최: ','Organizer: ') + ORG]);
+  if (v('#f-action')) items.push(['#f-action', AC[v('#f-action')] || v('#f-action')]);
+  if (v('#f-issue')) items.push(['#f-issue', IS[v('#f-issue')] || v('#f-issue')]);
+  if (v('#f-sido')) items.push(['#f-sido', sidoName(v('#f-sido')) + (SIGUNGU ? ' ' + SIGUNGU : '')]);
+  if (v('#f-actor')) items.push(['#f-actor', AT[v('#f-actor')] || v('#f-actor')]);
+  if (v('#q')) items.push(['#q', tr('검색: ','Search: ') + v('#q')]);
+  if (v('#from') || v('#to')) items.push(['date', (v('#from')||'') + ' ~ ' + (v('#to')||'')]);
+  const box = $('#active'); box.hidden = !items.length;
+  box.innerHTML = items.length ? `<span class="lab">${tr('걸린 조건','Filters')}</span>` + items.map(([k,t]) => `<button type="button" data-k="${esc(k)}" aria-label="${esc(t)} ${tr('조건 지우기','remove filter')}">${esc(t)}<b aria-hidden="true">✕</b></button>`).join('')
+    + (items.length > 1 ? `<button type="button" class="clear" data-k="all">${tr('모두 지우기','Clear all')}</button>` : '') : '';
 }
 // 주최: 단체마다 행위자 유형을 붙이되, 이어지는 단체의 유형이 같으면 묶어서 한 번만 표시
 function orgLine(e){
@@ -411,9 +459,9 @@ function orgLine(e){
 }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';
-const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};
-function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; }
-function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (OPEN_ID) u.set('id', OPEN_ID); if (LANG === 'en') u.set('lang', 'en');
+const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};  // + org, sigungu, scope
+function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; ORG = u.get('org') || ''; SIGUNGU = u.get('sigungu') || ''; SCOPE = ['street','protest'].includes(u.get('scope')) ? u.get('scope') : ''; }
+function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (ORG) u.set('org', ORG); if (SIGUNGU) u.set('sigungu', SIGUNGU); if (SCOPE) u.set('scope', SCOPE); if (OPEN_ID) u.set('id', OPEN_ID); if (LANG === 'en') u.set('lang', 'en');
   const qs = u.toString(); try { history.replaceState(null, '', (qs ? '?' + qs : location.pathname) + location.hash); } catch(e) {} }
 function render(){
   const all=filtered(); $('#count').textContent=tr(`${all.length}건 / 전체 ${EVENTS.length}건`, `${all.length} of ${EVENTS.length} events`);
@@ -421,18 +469,20 @@ function render(){
   const rows = all.slice(0, LIMIT);
   const more = $('#more'); more.hidden = all.length <= LIMIT;
   if (!more.hidden) more.textContent = tr(`이전 사건 더 보기 (${all.length - LIMIT}건 남음)`, `Show earlier events (${all.length - LIMIT} more)`);
-  writeURL();
+  writeURL(); activeBar();
   $('#list').innerHTML = rows.map(e=>{
     const when = e.end_date && e.end_date!==e.start_date ? `${e.start_date} ~ ${e.end_date}` : (e.start_date + (e.end_date? '' : tr(' ~ 진행 중',' – ongoing')));
     const place = [e.region_sido && e.region_sido!=='비해당' ? sidoName(e.region_sido) : '', e.region_sigungu, e.location_spot].filter(x=>x && x!=='비해당').join(' ');
-    const issues=[e.issue_1,e.issue_2,e.issue_3].filter(Boolean).map(x=>`<span class="chip">${esc(IS[x]||x)}</span>`).join('');
+    const issues=[e.issue_1,e.issue_2,e.issue_3].filter(Boolean).map(x=>`<button type="button" class="chip" data-f="issue" data-v="${esc(x)}">${esc(IS[x]||x)}</button>`).join('');
+    const orgChips = orgList(e).map(o=>`<button type="button" class="chip" data-f="org" data-v="${esc(o)}">${esc(o)}</button>`).join('');
+    const placeChip = place ? (e.region_sido && !['비해당','미상'].includes(e.region_sido) ? `<button type="button" class="chip" data-f="place" data-v="${esc(e.region_sido)}" data-v2="${esc(e.region_sigungu||'')}">${esc(place)}</button>` : `<span class="chip">${esc(place)}</span>`) : '';
     const size = e.size_raw ? (isNaN(Number(e.size_raw)) ? esc(e.size_raw) : tr(`${num(e.size_raw)}명`, num(e.size_raw))) + (e.size_source ? ` (${esc(LANG==='en'?(SIZESRC_EN[e.size_source]||e.size_source):e.size_source)})` : '') : (SZ[e.size_scale]||'');
     const srcs = e.source_url.split(';').map(s=>s.trim()).filter(Boolean); const medias=e.source_media.split(';').map(s=>s.trim()).filter(Boolean);
     const host = u=>{ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(_){ return tr('출처','source'); } };
     const links = srcs.map((u,k)=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(medias.length===srcs.length?medias[k]:(medias[k]||host(u)))}</a>`).join(', ');
     return `<div class="row" tabindex="0" data-id="${esc(e.event_id)}">
       <div class="top"><span class="date">${when}</span><span class="title">${esc(e.event_title)}</span></div>
-      <div class="meta"><span class="chip act">${esc(AC[e.action_primary]||e.action_primary)}</span>${e.organizers?`<span class="chip">${esc(e.organizers)}</span>`:''}${place?`<span class="chip">${esc(place)}</span>`:''}${issues}</div>
+      <div class="meta"><button type="button" class="chip act" data-f="action" data-v="${esc(e.action_primary)}">${esc(AC[e.action_primary]||e.action_primary)}</button>${orgChips}${placeChip}${issues}</div>
       <div class="detail"><dl>
         <dt>${tr('사건 번호','Event ID')}</dt><dd>${esc(e.event_id)}</dd>
         <dt>${tr('일시','Date')}</dt><dd>${when}${e.time_info?` ${esc(timeName(e.time_info))}`:''}</dd>
@@ -474,10 +524,19 @@ function route(){
   document.querySelectorAll('nav.tabs a').forEach(a=>a.classList.toggle('on', a.dataset.tab===ok));
 }
 addEventListener('hashchange', route);
-['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).addEventListener('input', ()=>{ LIMIT = PAGE; OPEN_ID=''; render(); }));
-$('#reset').onclick=()=>{ ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'].forEach(s=>$(s).value=''); LIMIT = PAGE; OPEN_ID=''; render(); };
-$('#list').addEventListener('click', ev=>{ const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) { r.classList.toggle('open'); OPEN_ID = r.classList.contains('open') ? r.dataset.id : ''; writeURL(); } });
-$('#list').addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ const r=ev.target.closest('.row'); if(r) r.classList.toggle('open'); }});
+FSEL.forEach(s=>$(s).addEventListener('input', ()=>{ if (s==='#f-sido') SIGUNGU=''; LIMIT = PAGE; OPEN_ID=''; render(); kpis(); }));
+$('#reset').onclick=()=>{ clearAll(); LIMIT = PAGE; OPEN_ID=''; render(); kpis(); };
+$('#kpis').addEventListener('click', ev=>{ const b=ev.target.closest('button.kpi'); if(!b) return; const k=b.dataset.scope;
+  if (k==='all') clearAll(); else SCOPE = (SCOPE===k ? '' : k);
+  LIMIT = PAGE; OPEN_ID=''; render(); kpis();
+  const c = $('#count'); if (c && c.getBoundingClientRect().top > innerHeight * 0.7) c.scrollIntoView({block:'start', behavior:'smooth'}); });
+$('#active').addEventListener('click', ev=>{ const b=ev.target.closest('button'); if(!b) return; const k=b.dataset.k;
+  if (k==='all') clearAll(); else if (k==='scope') SCOPE=''; else if (k==='org') ORG=''; else if (k==='date') { $('#from').value=''; $('#to').value=''; }
+  else { $(k).value=''; if (k==='#f-sido') SIGUNGU=''; }
+  LIMIT = PAGE; OPEN_ID=''; render(); kpis(); });
+$('#list').addEventListener('click', ev=>{ const t=ev.target.closest('button.chip[data-f]'); if (t) { ev.stopPropagation(); applyTag(t.dataset.f, t.dataset.v, t.dataset.v2); return; }
+  const r=ev.target.closest('.row'); if(r && !ev.target.closest('a')) { r.classList.toggle('open'); OPEN_ID = r.classList.contains('open') ? r.dataset.id : ''; writeURL(); } });
+$('#list').addEventListener('keydown', ev=>{ if(ev.key==='Enter' && !ev.target.closest('button')){ const r=ev.target.closest('.row'); if(r) r.classList.toggle('open'); }});
 $('#copymail').onclick=async ()=>{ const b=$('#copymail'); try{ await navigator.clipboard.writeText($('#mail').textContent); b.textContent=tr('복사됨','Copied'); }
   catch(e){ const r=document.createRange(); r.selectNodeContents($('#mail')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent=tr('Ctrl+C로 복사','Press Ctrl+C'); }
   setTimeout(()=>b.textContent=tr('주소 복사','Copy address'),2000); };
