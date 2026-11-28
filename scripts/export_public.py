@@ -32,7 +32,7 @@ if missing:
     print("Master_DB에 없는 열:", missing); sys.exit(1)
 
 # Actors 탭: 이름·별칭 → 행위자 유형 (주최가 여럿일 때 단체마다 유형을 붙이기 위해)
-atype = {}
+atype, canon = {}, {}
 try:
     for ar in sh.worksheet("Actors").get_all_values()[1:]:
         ar = ar + [""] * 4
@@ -40,6 +40,7 @@ try:
             for nm in [ar[0]] + [x for x in ar[1].replace(";", ",").split(",")]:
                 if nm.strip():
                     atype.setdefault(nm.strip(), ar[2].strip())
+                    canon.setdefault(nm.strip(), ar[0].strip())   # 별칭 → 대표 이름 (집계·필터용)
 except Exception as ex:
     print("Actors 읽기 실패(유형 표시 생략):", ex)
 
@@ -59,6 +60,7 @@ for r in vals[1:]:
     orgs = [o.strip() for o in e["organizers"].split(",") if o.strip()]
     if orgs:
         e["organizer_types"] = [atype.get(o, "") for o in orgs]
+        e["organizers_canon"] = [canon.get(o, o) for o in orgs]
         if e["organizer_types"] and not e["organizer_types"][0]:
             e["organizer_types"][0] = e["actor_type"]
     events.append(e)
