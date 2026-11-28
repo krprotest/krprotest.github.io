@@ -114,17 +114,17 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);
 .heatwrap{overflow-x:auto;max-width:100%}
 table.heat{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed;min-width:760px}
 table.heat col.lab{width:180px}
-html[lang=en] table.heat col.lab{width:230px}
-html[lang=en] table.heat{min-width:880px}
+html[lang=en] table.heat col.lab{width:170px}
+html[lang=en] table.heat{min-width:820px}
 html[lang=en] table.heat th[scope=row]{font-size:12px;line-height:1.35}
 table.heat col.tot{width:44px}
-table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap;vertical-align:bottom}
-table.heat thead th.v{white-space:nowrap;font-size:12px;line-height:1.3;padding:6px 1px;vertical-align:bottom;color:var(--fg)}
+table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap;vertical-align:middle}
+table.heat thead th.v{white-space:nowrap;font-size:12px;line-height:1.3;padding:6px 1px;vertical-align:middle;color:var(--fg)}
 table.heat thead th.v.none{color:var(--muted);font-weight:400}
 html[lang=en] table.heat thead th.v{font-size:11px}
 table.heat thead th.v,table.heat thead th.cat{text-align:center}
 table.heat th[scope=row]{vertical-align:middle;position:sticky;left:0;background:var(--bg);z-index:1;max-width:14em;white-space:normal}
-table.heat thead th.cat{border-bottom:2px solid var(--line);font-size:12px;white-space:normal;word-break:keep-all;line-height:1.25;padding:4px 2px;color:var(--fg)}
+table.heat thead th.cat{border-bottom:2px solid var(--line);font-size:12px;white-space:normal;word-break:keep-all;line-height:1.25;padding:4px 2px;color:var(--fg);vertical-align:middle}
 table.heat td{height:32px;vertical-align:middle;text-align:center;font-family:var(--mono);font-size:12px;border:2px solid var(--bg);padding:0}
 table.heat td button{width:100%;height:100%;border:0;font:inherit;cursor:pointer;color:inherit;background:transparent}
 table.heat td button:hover,table.heat td button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
@@ -637,11 +637,12 @@ function heat(){
     '09':'단식·<br>삭발·<br>혈서','13':'비대면<br>집단<br>항의','10':'농성·<br>점거·<br>방해','14':'분신·<br>자해','15':'불매·<br>거부','11':'물리적<br>충돌·<br>파괴','12':'세미나·<br>토론회'};
   const HEAD_EN = {'01':'State-<br>ment','02':'Press<br>conf.','03':'Petition','04':'Legal<br>action','05':'Picket','06':'Protest<br>visit','07':'Rally /<br>march','08':'One-<br>person',
     '09':'Hunger<br>strike','13':'Remote<br>protest','10':'Sit-in /<br>occupy','14':'Self-<br>harm','15':'Boycott','11':'Clash /<br>damage','12':'Seminar'};
+  const ROW_EN = {'ISS-05':'Security, anti-communism, alliance, NK rights','ISS-10':'Anti-immigration, multiculturalism, China','ISS-07':'Religion, family, anti-LGBTQ, education','ISS-02':'Anti-government, denouncing politicians'};
   const CAT_SHORT_EN = {'담화적':'Discursive','시위성':'Demonstrative','대결적':'Confront.','폭력적':'Violent','내부동원':'Internal'};
   const catLab = c => LANG==='en' ? (CAT_SHORT_EN[c]||c) : (c==='내부동원' ? '내부<wbr>동원' : esc(c));
   $('#st-heat').innerHTML = `<table class="heat"><colgroup><col class="lab">${acts.map(()=>'<col>').join('')}<col class="tot"></colgroup><thead><tr><th></th>${cats.map(([c,n])=>`<th class="cat" colspan="${n}">${catLab(c)}</th>`).join('')}<th></th></tr>
     <tr><th></th>${acts.map(a=>`<th scope="col" class="v${used.has(a)?'':' none'}" title="${esc(AC[a]||a)}">${(LANG==='en'?HEAD_EN:HEAD_KO)[a] || esc(AC[a]||a)}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
-    + issues.map(i => `<tr><th scope="row">${esc(IS[i]||i)}</th>${acts.map(a => { const v = cnt[i+'|'+a]||0;
+    + issues.map(i => `<tr><th scope="row" title="${esc(IS[i]||i)}">${esc((LANG==='en' && ROW_EN[i]) || IS[i] || i)}</th>${acts.map(a => { const v = cnt[i+'|'+a]||0;
         return v ? `<td style="background:${heatColor(v,max)};${v/max>.55?'color:#fff':''}"><button type="button" data-i="${esc(i)}" data-a="${esc(a)}" aria-label="${esc((IS[i]||i)+' · '+(AC[a]||a)+' '+v)}">${v}</button></td>` : '<td class="z">0</td>'; }).join('')}<td style="color:var(--muted)">${tot[i]}</td></tr>`).join('') + '</tbody></table>';
 }
 function party(){
