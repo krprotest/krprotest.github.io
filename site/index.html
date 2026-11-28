@@ -101,8 +101,43 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);
 .tablewrap{overflow-x:auto}
 .bars{display:grid;grid-template-columns:fit-content(45%) minmax(60px,1fr) max-content;gap:6px 10px;align-items:center;font-size:14px;max-width:640px}
 .bars>span:not(.v){min-width:0;overflow-wrap:anywhere}
-@media (max-width:560px){.bars{grid-template-columns:minmax(0,1fr) max-content;gap:2px 10px}.bars>span:not(.v){grid-column:1/-1;margin-top:8px}}
+@media (max-width:560px){.bars{grid-template-columns:minmax(0,1fr) max-content;gap:2px 10px}.bars>span:not(.v),.bars>button.lnk{grid-column:1/-1;margin-top:8px}}
 .bars .bar{height:14px;background:var(--mark);min-width:2px}
+.summary{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);padding:12px 16px;margin:0 0 16px;font-size:15px;line-height:1.6}
+.summary b{font-weight:600}
+.summary small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.vizhelp{color:var(--muted);font-size:13px;margin:-4px 0 10px;max-width:70ch}
+.heatwrap{overflow-x:auto;max-width:100%}
+table.heat{border-collapse:collapse;font-size:13px;width:auto}
+table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap;vertical-align:bottom}
+table.heat thead th.v{writing-mode:vertical-rl;height:118px;text-align:left;font-size:12px;padding:4px 2px}
+table.heat th[scope=row]{position:sticky;left:0;background:var(--bg);z-index:1;max-width:14em;white-space:normal}
+table.heat thead th.cat{text-align:center;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.04em}
+table.heat td{width:34px;height:30px;text-align:center;font-family:var(--mono);font-size:12px;border:2px solid var(--bg);padding:0}
+table.heat td button{width:100%;height:100%;border:0;font:inherit;cursor:pointer;color:inherit;background:transparent}
+table.heat td button:hover,table.heat td button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+table.heat td.z{color:transparent}
+.stack{display:flex;height:28px;max-width:640px;border:1px solid var(--line)}
+.stack button{border:0;padding:0;cursor:pointer;min-width:3px}
+.stack button:hover,.stack button:focus-visible{outline:2px solid var(--fg);outline-offset:-2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:13px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:0}
+.legend span b{font-family:var(--mono);font-weight:500}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,78px));gap:4px;margin:4px 0 8px}
+.tiles button,.tiles span{aspect-ratio:1/1;max-width:100%;border:1px solid var(--line);background:var(--panel);font:inherit;font-size:12px;color:var(--fg);display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1.2;padding:2px;text-align:center;overflow:hidden}
+.tiles button{cursor:pointer}
+.tiles button:hover,.tiles button:focus-visible{outline:2px solid var(--accent);outline-offset:-1px}
+.tiles b{font-family:var(--mono);font-size:15px;font-weight:600}
+.tiles .dark{color:#fff}
+.tiles .blank{visibility:hidden}
+.mapside{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.mapside .other{font-size:13px;color:var(--muted)}
+.mapside .other div{margin:2px 0}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 32px;max-width:900px}
+.mini .bars{max-width:none}
+.bars button.lnk{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:left;cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.bars button.lnk:hover{color:var(--accent);text-decoration:underline}
+.bars .t{color:var(--muted);font-size:12px;margin-left:4px}
 .bars .v{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
 .trend{background:var(--panel);border:1px solid var(--line);padding:12px 14px;margin:0 0 18px;min-width:0}
 .trend-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:6px}
@@ -156,6 +191,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <h1><span class="l-ko">사건 목록</span><span class="l-en">Events</span></h1>
   <p class="lede l-ko">언론 보도로 확인된 보수·우파 행위자의 항의행동을 사건 단위로 기록합니다. 행을 누르면 상세와 출처가 펼쳐집니다.</p>
   <p class="lede l-en">Protest events by conservative and right-wing actors, as confirmed by news reports. Click a row to see details and sources. Event titles, organizations and places are given in Korean as reported.</p>
+  <div class="summary" id="summary" hidden></div>
   <div class="kpis" id="kpis"></div>
   <div class="trend" id="trend-main"></div>
   <div class="wrap">
@@ -184,9 +220,28 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <p class="lede l-en">Counts below cover all published events and do not depend on the filters.</p>
   <h2><span class="l-ko">추이</span><span class="l-en">Trend</span></h2>
   <div class="trend" id="trend-stats"></div>
+  <h2><span class="l-ko">의제와 행동 방식</span><span class="l-en">Issues and forms of action</span></h2>
+  <p class="vizhelp l-ko">의제마다 어떤 행동 방식을 썼는지 보여 줍니다. 한 사건에 의제가 여럿이면 각 의제에 모두 셉니다. 칸을 누르면 해당 사건 목록으로 갑니다.</p>
+  <p class="vizhelp l-en">Which forms of action were used for each issue. An event with several issues is counted under each. Click a cell to see the events.</p>
+  <div class="heatwrap" id="st-heat"></div>
+  <h2><span class="l-ko">정당 연계</span><span class="l-en">Party involvement</span></h2>
+  <p class="vizhelp l-ko">정당이 단독으로 거리에 나섰는지(정당 단독), 시민단체와 함께했는지(정당+시민단체), 시민사회가 독자적으로 했는지를 나눠 봅니다. 막대를 누르면 해당 사건 목록으로 갑니다.</p>
+  <p class="vizhelp l-en">Whether a party acted alone on the street, together with civic groups, or civic actors acted without parties. Click a segment to see the events.</p>
+  <div id="st-party"></div>
+  <h2><span class="l-ko">지역</span><span class="l-en">Where</span></h2>
+  <p class="vizhelp l-ko">시도마다 같은 크기의 칸으로 그린 지도입니다. 색이 진할수록 사건이 많습니다. 칸을 누르면 그 지역 사건 목록으로 갑니다.</p>
+  <p class="vizhelp l-en">A tile map with one equal-sized tile per province; darker means more events. Click a tile to see the events.</p>
+  <div class="mapside" id="st-map"></div>
+  <h2><span class="l-ko">활발한 주최 단체</span><span class="l-en">Most active organizers</span></h2>
+  <p class="vizhelp l-ko">주최·공동주최로 이름을 올린 사건 수 기준 상위 10곳입니다(개인·소모임·미상 제외). 이름을 누르면 그 단체의 사건 목록으로 갑니다.</p>
+  <p class="vizhelp l-en">Top 10 by number of events organized or co-organized (individuals, small informal groups and unknown excluded). Click a name to see its events.</p>
+  <div class="bars" id="st-org"></div>
+  <div class="mini">
+    <div><h2><span class="l-ko">규모</span><span class="l-en">Size</span></h2><p class="vizhelp l-ko">참가 인원이 있는 행동만(성명·서명 등 제외)</p><p class="vizhelp l-en">Actions with participants only (statements, petitions etc. excluded)</p><div class="bars" id="st-size"></div></div>
+    <div><h2><span class="l-ko">요일</span><span class="l-en">Day of week</span></h2><p class="vizhelp l-ko">사건이 열린(시작한) 요일</p><p class="vizhelp l-en">Day on which each event took place (or began)</p><div class="bars" id="st-dow"></div></div>
+  </div>
   <h2><span class="l-ko">행동 유형별</span><span class="l-en">By action type</span></h2><div class="bars" id="st-action"></div>
   <h2><span class="l-ko">의제별</span><span class="l-en">By issue (primary)</span></h2><div class="bars" id="st-issue"></div>
-  <h2><span class="l-ko">시도별</span><span class="l-en">By province</span></h2><div class="bars" id="st-sido"></div>
   <h2><span class="l-ko">행위자 유형별</span><span class="l-en">By actor type (lead organizer)</span></h2><div class="bars" id="st-actor"></div>
 </section>
 
@@ -356,7 +411,9 @@ function shiftKey(k, mode, n){
 }
 function realBuckets(mode){
   const map = {};
-  EVENTS.forEach(e => { if (!e.start_date) return; const k = keyOf(e.start_date, mode), c = catOf(e.mid_category);
+  const firstReg = EVENTS.filter(e => e.start_date && !/상설/.test(e.time_info||'')).map(e => e.start_date).sort()[0] || '';
+  EVENTS.forEach(e => { if (!e.start_date) return; if (firstReg && e.start_date < firstReg && /상설/.test(e.time_info||'')) return;  // 상설 농성의 오래전 시작일은 축을 늘리지 않게 뺀다
+    const k = keyOf(e.start_date, mode), c = catOf(e.mid_category);
     if (!map[k]) map[k] = {}; map[k][c] = (map[k][c]||0) + 1; });
   const keys = Object.keys(map).sort(); if (!keys.length) return [];
   const minN = mode==='day' ? 14 : mode==='week' ? 8 : 6;   // 자료가 적어도 축이 비지 않게 앞쪽을 빈 칸으로 채운다
@@ -414,20 +471,20 @@ function kpis(){
 }
 function filtered(){
   const q=$('#q').value.trim(), f=$('#from').value, t=$('#to').value, a=$('#f-action').value, i=$('#f-issue').value, s=$('#f-sido').value, ac=$('#f-actor').value;
-  return EVENTS.filter(e=> (!ORG || orgList(e).includes(ORG)) && (!SIGUNGU || e.region_sigungu===SIGUNGU)
+  return EVENTS.filter(e=> (!PARTY || e.party_link===PARTY) && (!ORG || orgList(e).includes(ORG)) && (!SIGUNGU || e.region_sigungu===SIGUNGU)
     && (SCOPE!=='street' || isStreet(e)) && (SCOPE!=='protest' || e.mid_category!=='내부동원')
     && (!q || (e.event_title+e.organizers+e.location_spot+e.target_entity).includes(q))
     && (!f || e.start_date>=f) && (!t || e.start_date<=t) && (!a || e.action_primary===a)
     && (!i || [e.issue_1,e.issue_2,e.issue_3].includes(i)) && (!s || e.region_sido===s) && (!ac || e.actor_type===ac));
 }
 // 태그·카드로 거는 조건 (주소에도 남는다)
-let ORG = '', SIGUNGU = '', SCOPE = '';
+let ORG = '', SIGUNGU = '', SCOPE = '', PARTY = '';
 const STREET = ['06','07','08','09','10','11'];
 const isStreet = e => STREET.includes(e.action_primary);
 const orgList = e => String(e.organizers||'').split(',').map(x=>x.trim()).filter(Boolean);
 const FSEL = ['#q','#from','#to','#f-action','#f-issue','#f-sido','#f-actor'];
-function anyFilter(){ return !!(ORG || SIGUNGU || SCOPE || FSEL.some(x => $(x).value)); }
-function clearAll(){ FSEL.forEach(x => $(x).value=''); ORG=''; SIGUNGU=''; SCOPE=''; }
+function anyFilter(){ return !!(ORG || SIGUNGU || SCOPE || PARTY || FSEL.some(x => $(x).value)); }
+function clearAll(){ FSEL.forEach(x => $(x).value=''); ORG=''; SIGUNGU=''; SCOPE=''; PARTY=''; }
 function applyTag(f, v, v2){
   if (f==='action') $('#f-action').value = v;
   else if (f==='issue') $('#f-issue').value = v;
@@ -441,6 +498,7 @@ function activeBar(){
   const v = x => $(x).value;
   if (SCOPE) items.push(['scope', SCOPE==='street' ? tr('거리 행동','Street actions') : tr('항의 사건(내부동원 제외)','Protest events')]);
   if (ORG) items.push(['org', tr('주최: ','Organizer: ') + ORG]);
+  if (PARTY) items.push(['party', LB('party')[PARTY] || PARTY]);
   if (v('#f-action')) items.push(['#f-action', AC[v('#f-action')] || v('#f-action')]);
   if (v('#f-issue')) items.push(['#f-issue', IS[v('#f-issue')] || v('#f-issue')]);
   if (v('#f-sido')) items.push(['#f-sido', sidoName(v('#f-sido')) + (SIGUNGU ? ' ' + SIGUNGU : '')]);
@@ -469,8 +527,8 @@ function orgLine(e){
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const PAGE = 50; let LIMIT = PAGE, OPEN_ID = '';
 const FKEYS = {q:'#q', from:'#from', to:'#to', action:'#f-action', issue:'#f-issue', sido:'#f-sido', actor:'#f-actor'};  // + org, sigungu, scope
-function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; ORG = u.get('org') || ''; SIGUNGU = u.get('sigungu') || ''; SCOPE = ['street','protest'].includes(u.get('scope')) ? u.get('scope') : ''; }
-function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (ORG) u.set('org', ORG); if (SIGUNGU) u.set('sigungu', SIGUNGU); if (SCOPE) u.set('scope', SCOPE); if (OPEN_ID) u.set('id', OPEN_ID); if (LANG === 'en') u.set('lang', 'en');
+function readURL(){ const u = new URLSearchParams(location.search); Object.entries(FKEYS).forEach(([k,sel]) => { if (u.has(k)) $(sel).value = u.get(k); }); OPEN_ID = u.get('id') || ''; ORG = u.get('org') || ''; PARTY = /^P[0-2]$/.test(u.get('party')||'') ? u.get('party') : ''; SIGUNGU = u.get('sigungu') || ''; SCOPE = ['street','protest'].includes(u.get('scope')) ? u.get('scope') : ''; }
+function writeURL(){ const u = new URLSearchParams(); Object.entries(FKEYS).forEach(([k,sel]) => { if ($(sel).value) u.set(k, $(sel).value); }); if (ORG) u.set('org', ORG); if (PARTY) u.set('party', PARTY); if (SIGUNGU) u.set('sigungu', SIGUNGU); if (SCOPE) u.set('scope', SCOPE); if (OPEN_ID) u.set('id', OPEN_ID); if (LANG === 'en') u.set('lang', 'en');
   const qs = u.toString(); try { history.replaceState(null, '', (qs ? '?' + qs : location.pathname) + location.hash); } catch(e) {} }
 function render(){
   const all=filtered(); $('#count').textContent=tr(`${all.length}건 / 전체 ${EVENTS.length}건`, `${all.length} of ${EVENTS.length} events`);
@@ -512,7 +570,85 @@ function bars(sel, key, labels, nameFn){
   const arr=Object.entries(c).sort((a,b)=>b[1]-a[1]); const max=arr[0]?arr[0][1]:1;
   $(sel).innerHTML=arr.map(([k,v])=>`<span>${esc(labels?(labels[k]||k):(nameFn?nameFn(k):k))}</span><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
 }
-function stats(){ bars('#st-action','action_primary',LB('action')); bars('#st-issue','issue_1',LB('issue')); bars('#st-sido','region_sido',null,sidoName); bars('#st-actor','actor_type',LB('actor')); }
+// ---- 시각화 (통계 탭·첫 화면 요약)
+const SIDO_TILE = [['서울',1,0],['강원',2,0],['인천',0,1],['경기',1,1],['충북',2,1],['경북',3,1],['충남',0,2],['세종',1,2],['대전',2,2],['대구',3,2],['전북',0,3],['경남',2,3],['울산',3,3],['전남광주',0,4],['부산',3,4],['제주',0,5]];
+const SIDO_SHORT_EN = {'서울':'Seoul','강원':'Gangwon','인천':'Incheon','경기':'Gyeonggi','충북':'Chungbuk','경북':'Gyeongbuk','충남':'Chungnam','세종':'Sejong','대전':'Daejeon','대구':'Daegu','전북':'Jeonbuk','경남':'Gyeongnam','울산':'Ulsan','전남광주':'Jeonnam· Gwangju','부산':'Busan','제주':'Jeju'};
+const CAT_ORDER = ['담화적','시위성','대결적','폭력적','내부동원'];
+const ACT_CAT = {'01':'담화적','02':'담화적','03':'담화적','04':'담화적','05':'담화적','06':'시위성','07':'시위성','08':'시위성','09':'시위성','13':'시위성','10':'대결적','14':'대결적','15':'대결적','11':'폭력적','12':'내부동원'};
+const heatColor = (v, max) => v ? `color-mix(in srgb, var(--mark) ${Math.round(18 + 72 * v / max)}%, var(--panel))` : 'transparent';
+function goEvents(set){ clearAll(); set(); LIMIT = PAGE; OPEN_ID = ''; location.hash = '#events'; render(); kpis(); setTimeout(()=>{ const c=$('#count'); if (c) c.scrollIntoView({block:'start'}); }, 30); }
+function summary(){
+  const box = $('#summary'); if (!EVENTS.length) { box.hidden = true; return; }
+  const end = new Date((DATA.generated_at || '').slice(0,10) + 'T00:00:00'); if (isNaN(end)) { box.hidden = true; return; }
+  const iso = d => ymd(d), add = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+  const a0 = iso(add(end,-6)), a1 = iso(end), b0 = iso(add(end,-13)), b1 = iso(add(end,-7));
+  const cur = EVENTS.filter(e => e.start_date >= a0 && e.start_date <= a1), prev = EVENTS.filter(e => e.start_date >= b0 && e.start_date <= b1);
+  const top = key => { const c = {}; cur.forEach(e => { if (e[key]) c[e[key]] = (c[e[key]]||0) + 1; }); return Object.entries(c).sort((x,y)=>y[1]-x[1])[0]; };
+  const ti = top('issue_1'), ta = top('action_primary'), diff = cur.length - prev.length, md = x => Number(x.slice(5,7)) + '/' + Number(x.slice(8,10));
+  const cmp = diff > 0 ? tr(`그 전 7일보다 ${diff}건 많음`, `${diff} more than the previous 7 days`) : diff < 0 ? tr(`그 전 7일보다 ${-diff}건 적음`, `${-diff} fewer than the previous 7 days`) : tr('그 전 7일과 같음', 'same as the previous 7 days');
+  box.hidden = false;
+  box.innerHTML = tr(`최근 7일(${md(a0)}~${md(a1)}) 동안 <b>${cur.length}건</b>이 기록되었습니다(${cmp}).`, `In the last 7 days (${md(a0)}–${md(a1)}), <b>${cur.length} events</b> were recorded (${cmp}).`)
+    + (ti ? tr(` 가장 많은 의제는 <b>${esc(LB('issue')[ti[0]]||ti[0])}</b>`, ` The most common issue was <b>${esc(LB('issue')[ti[0]]||ti[0])}</b>`) : '')
+    + (ta ? tr(`, 가장 많은 행동은 <b>${esc(LB('action')[ta[0]]||ta[0])}</b>였습니다.`, ` and the most common form of action was <b>${esc(LB('action')[ta[0]]||ta[0])}</b>.`) : '')
+    + `<small>${tr('검수 중인 최근 사건은 아직 포함되지 않아, 마지막 며칠의 수치는 늘어날 수 있습니다.','Recent events still under review are not yet included, so the last few days may rise.')}</small>`;
+}
+function heat(){
+  const IS = LB('issue'), AC = LB('action');
+  const acts = [...new Set(EVENTS.map(e=>e.action_primary).filter(Boolean))].sort((a,b)=> CAT_ORDER.indexOf(ACT_CAT[a]) - CAT_ORDER.indexOf(ACT_CAT[b]) || a.localeCompare(b));
+  const cnt = {}, tot = {};
+  EVENTS.forEach(e => [...new Set([e.issue_1,e.issue_2,e.issue_3].filter(Boolean))].forEach(i => { cnt[i+'|'+e.action_primary] = (cnt[i+'|'+e.action_primary]||0) + 1; tot[i] = (tot[i]||0) + 1; }));
+  const issues = Object.keys(tot).sort((a,b)=>tot[b]-tot[a]);
+  const max = Math.max(1, ...Object.values(cnt));
+  const cats = []; acts.forEach(a => { const c = ACT_CAT[a]; if (cats.length && cats[cats.length-1][0]===c) cats[cats.length-1][1]++; else cats.push([c,1]); });
+  $('#st-heat').innerHTML = `<table class="heat"><thead><tr><th></th>${cats.map(([c,n])=>`<th class="cat" colspan="${n}">${esc(catName(c))}</th>`).join('')}<th></th></tr>
+    <tr><th></th>${acts.map(a=>`<th scope="col" class="v">${esc(AC[a]||a)}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
+    + issues.map(i => `<tr><th scope="row">${esc(IS[i]||i)}</th>${acts.map(a => { const v = cnt[i+'|'+a]||0;
+        return v ? `<td style="background:${heatColor(v,max)};${v/max>.55?'color:#fff':''}"><button type="button" data-i="${esc(i)}" data-a="${esc(a)}" aria-label="${esc((IS[i]||i)+' · '+(AC[a]||a)+' '+v)}">${v}</button></td>` : '<td class="z">0</td>'; }).join('')}<td style="color:var(--muted)">${tot[i]}</td></tr>`).join('') + '</tbody></table>';
+}
+function party(){
+  const PA = LB('party'), c = {P0:0,P1:0,P2:0}; EVENTS.forEach(e => { if (c[e.party_link] !== undefined) c[e.party_link]++; });
+  const n = c.P0 + c.P1 + c.P2 || 1, col = {P0:'var(--chip)', P1:'var(--mark)', P2:'var(--accent)'};
+  const order = ['P2','P1','P0'], pct = k => Math.round(c[k]/n*100);
+  $('#st-party').innerHTML = `<div class="stack">${order.filter(k=>c[k]).map(k=>`<button type="button" data-p="${k}" style="flex:${c[k]};background:${col[k]}" aria-label="${esc(PA[k])} ${c[k]}"></button>`).join('')}</div>
+    <div class="legend">${order.map(k=>`<span><i style="background:${col[k]};${k==='P0'?'border:1px solid var(--line)':''}"></i>${esc(PA[k])} <b>${c[k]}</b> (${pct(k)}%)</span>`).join('')}</div>`;
+}
+function tilemap(){
+  const c = {}; EVENTS.forEach(e => { let s = e.region_sido; if (!s) return; if (s==='광주'||s==='전남') s='전남광주'; c[s]=(c[s]||0)+1; });
+  const max = Math.max(1, ...SIDO_TILE.map(([s])=>c[s]||0)), grid = {};
+  SIDO_TILE.forEach(([s,x,y]) => grid[x+','+y] = s);
+  let html = '<div class="tiles">';
+  for (let y=0; y<6; y++) for (let x=0; x<4; x++) { const s = grid[x+','+y];
+    if (!s) { html += '<span class="blank"></span>'; continue; }
+    const v = c[s]||0, nm = LANG==='en' ? SIDO_SHORT_EN[s] : s;
+    html += v ? `<button type="button" data-s="${esc(s)}" style="background:${heatColor(v,max)}" class="${v/max>.55?'dark':''}" aria-label="${esc(sidoName(s))} ${v}"><span style="all:unset">${esc(nm)}</span><b>${v}</b></button>`
+              : `<span style="color:var(--muted)">${esc(nm)}<b style="font-weight:400">0</b></span>`; }
+  html += '</div>';
+  const other = ['온라인','해외','비해당','미상'].filter(s=>c[s]);
+  html += `<div class="other">${other.length ? `<div>${tr('지도에 없는 곳','Not on the map')}</div>` + other.map(s=>`<div>${esc(sidoName(s))} <b style="font-family:var(--mono)">${c[s]}</b></div>`).join('') : ''}
+    <div style="margin-top:8px">${tr('비해당: 성명·고소처럼 장소가 의미 없는 행동','Not applicable: statements, legal complaints, etc.')}</div></div>`;
+  $('#st-map').innerHTML = html;
+}
+function topOrgs(){
+  const AT = LB('actor'), c = {}, t = {};
+  EVENTS.forEach(e => orgList(e).forEach((o,i) => { const ty = (e.organizer_types||[])[i] || (i===0 ? e.actor_type : '');
+    if (['T8','T9',''].includes(ty)) return; c[o]=(c[o]||0)+1; t[o]=ty; }));
+  const arr = Object.entries(c).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])).slice(0,10), max = arr[0] ? arr[0][1] : 1;
+  $('#st-org').innerHTML = arr.map(([o,v])=>`<button type="button" class="lnk" data-o="${esc(o)}">${esc(o)}<span class="t">${esc(AT[t[o]]||'')}</span></button><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
+}
+function sizeDow(){
+  const SZ = LB('size'), sc = {}; EVENTS.forEach(e => { if (e.size_scale && e.size_scale!=='SX') sc[e.size_scale]=(sc[e.size_scale]||0)+1; });
+  const so = ['S1','S2','S3','S4','S5','S0'].filter(k=>sc[k]), smax = Math.max(1, ...so.map(k=>sc[k]));
+  $('#st-size').innerHTML = so.map(k=>`<span>${esc(SZ[k]||k)}</span><div class="bar" style="width:${sc[k]/smax*100}%;${k==='S0'?'background:var(--line)':''}"></div><span class="v">${sc[k]}</span>`).join('');
+  const names = LANG==='en' ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : ['월','화','수','목','금','토','일'], dc = [0,0,0,0,0,0,0];
+  EVENTS.forEach(e => { const d = new Date(e.start_date + 'T00:00:00'); if (!isNaN(d)) dc[(d.getDay()+6)%7]++; });
+  const dmax = Math.max(1, ...dc);
+  $('#st-dow').innerHTML = dc.map((v,i)=>`<span>${names[i]}</span><div class="bar" style="width:${v/dmax*100}%"></div><span class="v">${v}</span>`).join('');
+}
+$('#st-heat').addEventListener('click', ev => { const b = ev.target.closest('button[data-i]'); if (b) goEvents(() => { $('#f-issue').value = b.dataset.i; $('#f-action').value = b.dataset.a; }); });
+$('#st-party').addEventListener('click', ev => { const b = ev.target.closest('button[data-p]'); if (b) goEvents(() => { PARTY = b.dataset.p; }); });
+$('#st-map').addEventListener('click', ev => { const b = ev.target.closest('button[data-s]'); if (b) goEvents(() => { $('#f-sido').value = b.dataset.s; }); });
+$('#st-org').addEventListener('click', ev => { const b = ev.target.closest('button[data-o]'); if (b) goEvents(() => { ORG = b.dataset.o; }); });
+function stats(){ summary(); heat(); party(); tilemap(); topOrgs(); sizeDow(); bars('#st-action','action_primary',LB('action')); bars('#st-issue','issue_1',LB('issue')); bars('#st-actor','actor_type',LB('actor')); }
 // 언어 전환: 고정 문구는 .l-ko / .l-en 으로 숨기고, 화면에서 만드는 문구는 다시 그린다
 function applyLang(){
   document.documentElement.lang = LANG;
@@ -541,7 +677,7 @@ $('#kpis').addEventListener('click', ev=>{ const b=ev.target.closest('button.kpi
   LIMIT = PAGE; OPEN_ID=''; render(); kpis();
   const c = $('#count'); if (c && c.getBoundingClientRect().top > innerHeight * 0.7) c.scrollIntoView({block:'start', behavior:'smooth'}); });
 $('#active').addEventListener('click', ev=>{ const b=ev.target.closest('button'); if(!b) return; const k=b.dataset.k;
-  if (k==='all') clearAll(); else if (k==='scope') SCOPE=''; else if (k==='org') ORG=''; else if (k==='date') { $('#from').value=''; $('#to').value=''; }
+  if (k==='all') clearAll(); else if (k==='scope') SCOPE=''; else if (k==='org') ORG=''; else if (k==='party') PARTY=''; else if (k==='date') { $('#from').value=''; $('#to').value=''; }
   else { $(k).value=''; if (k==='#f-sido') SIGUNGU=''; }
   LIMIT = PAGE; OPEN_ID=''; render(); kpis(); });
 $('#list').addEventListener('click', ev=>{ const t=ev.target.closest('button.chip[data-f]'); if (t) { ev.stopPropagation(); applyTag(t.dataset.f, t.dataset.v, t.dataset.v2); return; }
