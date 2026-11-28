@@ -111,12 +111,13 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);
 .summary small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 .vizhelp{color:var(--muted);font-size:13px;margin:-4px 0 10px;max-width:70ch}
 .heatwrap{overflow-x:auto;max-width:100%}
-table.heat{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed;min-width:640px}
-table.heat col.lab{width:190px}
+table.heat{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed;min-width:760px}
+table.heat col.lab{width:180px}
 table.heat col.tot{width:44px}
 table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap;vertical-align:bottom}
-table.heat thead th.v{white-space:normal;word-break:keep-all;overflow-wrap:anywhere;font-size:12px;line-height:1.3;padding:6px 3px;vertical-align:bottom;color:var(--fg)}
-html[lang=en] table.heat thead th.v{overflow-wrap:normal;hyphens:auto;font-size:11px}
+table.heat thead th.v{white-space:nowrap;font-size:12px;line-height:1.3;padding:6px 1px;vertical-align:bottom;color:var(--fg)}
+table.heat thead th.v.none{color:var(--muted);font-weight:400}
+html[lang=en] table.heat thead th.v{font-size:11px}
 table.heat thead th.v,table.heat thead th.cat{text-align:center}
 table.heat th[scope=row]{position:sticky;left:0;background:var(--bg);z-index:1;max-width:14em;white-space:normal}
 table.heat thead th.cat{border-bottom:2px solid var(--line);font-size:12px;white-space:normal;word-break:keep-all;line-height:1.25;padding:4px 2px;color:var(--fg)}
@@ -620,16 +621,22 @@ function summary(){
 }
 function heat(){
   const IS = LB('issue'), AC = LB('action');
-  const acts = [...new Set(EVENTS.map(e=>e.action_primary).filter(Boolean))].sort((a,b)=> CAT_ORDER.indexOf(ACT_CAT[a]) - CAT_ORDER.indexOf(ACT_CAT[b]) || a.localeCompare(b));
+  const used = new Set(EVENTS.map(e=>e.action_primary).filter(Boolean));
+  const acts = [...new Set([...Object.keys(L.action), ...used])].sort((a,b)=> CAT_ORDER.indexOf(ACT_CAT[a]) - CAT_ORDER.indexOf(ACT_CAT[b]) || a.localeCompare(b));
   const cnt = {}, tot = {};
   EVENTS.forEach(e => [...new Set([e.issue_1,e.issue_2,e.issue_3].filter(Boolean))].forEach(i => { cnt[i+'|'+e.action_primary] = (cnt[i+'|'+e.action_primary]||0) + 1; tot[i] = (tot[i]||0) + 1; }));
   const issues = Object.keys(tot).sort((a,b)=>tot[b]-tot[a]);
   const max = Math.max(1, ...Object.values(cnt));
   const cats = []; acts.forEach(a => { const c = ACT_CAT[a]; if (cats.length && cats[cats.length-1][0]===c) cats[cats.length-1][1]++; else cats.push([c,1]); });
+  // 좁은 열에 맞춘 머리글(줄바꿈 위치를 직접 정함). 전체 이름은 마우스를 올리면 보인다
+  const HEAD_KO = {'01':'성명·<br>시국<br>선언','02':'기자<br>회견','03':'서명·<br>청원','04':'고소·<br>고발·<br>진정','05':'피케팅·<br>선전전','06':'항의<br>방문','07':'집회·<br>행진','08':'1인<br>시위',
+    '09':'단식·<br>삭발·<br>혈서','13':'비대면<br>집단<br>항의','10':'농성·<br>점거·<br>방해','14':'분신·<br>자해','15':'불매·<br>거부','11':'물리적<br>충돌·<br>파괴','12':'세미나·<br>토론회'};
+  const HEAD_EN = {'01':'State-<br>ment','02':'Press<br>conf.','03':'Petition','04':'Legal<br>action','05':'Picket','06':'Protest<br>visit','07':'Rally /<br>march','08':'One-<br>person',
+    '09':'Hunger<br>strike','13':'Remote<br>protest','10':'Sit-in /<br>occupy','14':'Self-<br>harm','15':'Boycott','11':'Clash /<br>damage','12':'Seminar'};
   const CAT_SHORT_EN = {'담화적':'Discursive','시위성':'Demonstrative','대결적':'Confront.','폭력적':'Violent','내부동원':'Internal'};
   const catLab = c => LANG==='en' ? (CAT_SHORT_EN[c]||c) : (c==='내부동원' ? '내부<wbr>동원' : esc(c));
   $('#st-heat').innerHTML = `<table class="heat"><colgroup><col class="lab">${acts.map(()=>'<col>').join('')}<col class="tot"></colgroup><thead><tr><th></th>${cats.map(([c,n])=>`<th class="cat" colspan="${n}">${catLab(c)}</th>`).join('')}<th></th></tr>
-    <tr><th></th>${acts.map(a=>`<th scope="col" class="v">${esc(AC[a]||a).replace(/·/g,'·<wbr>').replace(/ \/ /g,' /<wbr> ')}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
+    <tr><th></th>${acts.map(a=>`<th scope="col" class="v${used.has(a)?'':' none'}" title="${esc(AC[a]||a)}">${(LANG==='en'?HEAD_EN:HEAD_KO)[a] || esc(AC[a]||a)}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
     + issues.map(i => `<tr><th scope="row">${esc(IS[i]||i)}</th>${acts.map(a => { const v = cnt[i+'|'+a]||0;
         return v ? `<td style="background:${heatColor(v,max)};${v/max>.55?'color:#fff':''}"><button type="button" data-i="${esc(i)}" data-a="${esc(a)}" aria-label="${esc((IS[i]||i)+' · '+(AC[a]||a)+' '+v)}">${v}</button></td>` : '<td class="z">0</td>'; }).join('')}<td style="color:var(--muted)">${tot[i]}</td></tr>`).join('') + '</tbody></table>';
 }
