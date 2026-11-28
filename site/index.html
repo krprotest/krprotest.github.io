@@ -103,17 +103,24 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);
 .bars>span:not(.v){min-width:0;overflow-wrap:anywhere}
 @media (max-width:560px){.bars{grid-template-columns:minmax(0,1fr) max-content;gap:2px 10px}.bars>span:not(.v),.bars>button.lnk{grid-column:1/-1;margin-top:8px}}
 .bars .bar{height:14px;background:var(--mark);min-width:2px}
+.viz{max-width:880px}
+.viz .bars,.viz .stack{max-width:none}
+.viz .trend{max-width:none}
 .summary{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);padding:12px 16px;margin:0 0 16px;font-size:15px;line-height:1.6}
 .summary b{font-weight:600}
 .summary small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 .vizhelp{color:var(--muted);font-size:13px;margin:-4px 0 10px;max-width:70ch}
 .heatwrap{overflow-x:auto;max-width:100%}
-table.heat{border-collapse:collapse;font-size:13px;width:auto}
+table.heat{border-collapse:collapse;font-size:13px;width:100%;table-layout:fixed;min-width:640px}
+table.heat col.lab{width:190px}
+table.heat col.tot{width:44px}
 table.heat th{font-weight:500;color:var(--muted);padding:4px 6px;text-align:left;white-space:nowrap;vertical-align:bottom}
-table.heat thead th.v{writing-mode:vertical-rl;height:118px;text-align:left;font-size:12px;padding:4px 2px}
+table.heat thead th.v{white-space:normal;word-break:keep-all;overflow-wrap:anywhere;font-size:12px;line-height:1.3;padding:6px 3px;vertical-align:bottom;color:var(--fg)}
+html[lang=en] table.heat thead th.v{overflow-wrap:normal;hyphens:auto;font-size:11px}
+table.heat thead th.v,table.heat thead th.cat{text-align:center}
 table.heat th[scope=row]{position:sticky;left:0;background:var(--bg);z-index:1;max-width:14em;white-space:normal}
-table.heat thead th.cat{text-align:center;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.04em}
-table.heat td{width:34px;height:30px;text-align:center;font-family:var(--mono);font-size:12px;border:2px solid var(--bg);padding:0}
+table.heat thead th.cat{border-bottom:2px solid var(--line);font-size:12px;white-space:normal;word-break:keep-all;line-height:1.25;padding:4px 2px;color:var(--fg)}
+table.heat td{height:32px;vertical-align:middle;text-align:center;font-family:var(--mono);font-size:12px;border:2px solid var(--bg);padding:0}
 table.heat td button{width:100%;height:100%;border:0;font:inherit;cursor:pointer;color:inherit;background:transparent}
 table.heat td button:hover,table.heat td button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 table.heat td.z{color:transparent}
@@ -123,6 +130,17 @@ table.heat td.z{color:transparent}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:13px}
 .legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:0}
 .legend span b{font-family:var(--mono);font-weight:500}
+.hexmap{width:100%;max-width:400px;height:auto;flex:0 1 400px}
+.hexmap polygon{stroke:var(--bg);stroke-width:3}
+.hexmap .off polygon{stroke:var(--line);stroke-width:1}
+.hexmap .hx[role=button]{cursor:pointer}
+.hexmap .hx[role=button]:hover polygon,.hexmap .hx:focus-visible polygon{stroke:var(--accent);stroke-width:3}
+.hexmap .hx:focus{outline:none}
+.hexmap text{text-anchor:middle;fill:var(--fg);font-size:12px;pointer-events:none}
+.hexmap .hv{font-family:var(--mono);font-size:14px;font-weight:600}
+.hexmap .zero{fill:var(--muted);font-weight:400}
+.hexmap .off .hn{fill:var(--muted)}
+.hexmap .dk{fill:#fff}
 .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,78px));gap:4px;margin:4px 0 8px}
 .tiles button,.tiles span{aspect-ratio:1/1;max-width:100%;border:1px solid var(--line);background:var(--panel);font:inherit;font-size:12px;color:var(--fg);display:flex;flex-direction:column;justify-content:center;align-items:center;line-height:1.2;padding:2px;text-align:center;overflow:hidden}
 .tiles button{cursor:pointer}
@@ -215,6 +233,7 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
 </section>
 
 <section class="sec" id="sec-stats">
+<div class="viz">
   <h1><span class="l-ko">통계</span><span class="l-en">Statistics</span></h1>
   <p class="lede l-ko">아래 수치는 현재 공개된 사건 전체를 집계한 것입니다. 필터와 무관합니다.</p>
   <p class="lede l-en">Counts below cover all published events and do not depend on the filters.</p>
@@ -236,13 +255,11 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-si
   <p class="vizhelp l-ko">주최·공동주최로 이름을 올린 사건 수 기준 상위 10곳입니다(개인·소모임·미상 제외). 이름을 누르면 그 단체의 사건 목록으로 갑니다.</p>
   <p class="vizhelp l-en">Top 10 by number of events organized or co-organized (individuals, small informal groups and unknown excluded). Click a name to see its events.</p>
   <div class="bars" id="st-org"></div>
-  <div class="mini">
-    <div><h2><span class="l-ko">규모</span><span class="l-en">Size</span></h2><p class="vizhelp l-ko">참가 인원이 있는 행동만(성명·서명 등 제외)</p><p class="vizhelp l-en">Actions with participants only (statements, petitions etc. excluded)</p><div class="bars" id="st-size"></div></div>
-    <div><h2><span class="l-ko">요일</span><span class="l-en">Day of week</span></h2><p class="vizhelp l-ko">사건이 열린(시작한) 요일</p><p class="vizhelp l-en">Day on which each event took place (or began)</p><div class="bars" id="st-dow"></div></div>
-  </div>
+  <h2><span class="l-ko">규모</span><span class="l-en">Size</span></h2><p class="vizhelp l-ko">참가 인원이 있는 행동만 셉니다(성명·서명·고소 등 제외).</p><p class="vizhelp l-en">Actions with participants only (statements, petitions, legal complaints etc. excluded).</p><div class="bars" id="st-size"></div>
   <h2><span class="l-ko">행동 유형별</span><span class="l-en">By action type</span></h2><div class="bars" id="st-action"></div>
   <h2><span class="l-ko">의제별</span><span class="l-en">By issue (primary)</span></h2><div class="bars" id="st-issue"></div>
   <h2><span class="l-ko">행위자 유형별</span><span class="l-en">By actor type (lead organizer)</span></h2><div class="bars" id="st-actor"></div>
+</div>
 </section>
 
 <section class="sec" id="sec-method">
@@ -401,7 +418,7 @@ async function load(){
 
 // ---- 주간·월간 추이 그래프 (중분류별 누적 막대) ----
 const CATS = [['담화적','--c1'],['시위성','--c2'],['대결적','--c3'],['폭력적','--c4'],['내부동원','--c5']];
-let TMODE = 'week';
+let TMODE = 'day';
 function catOf(m){ m = m || ''; if (m.includes('내부')) return '내부동원'; const f = CATS.find(c => m.startsWith(c[0])); return f ? f[0] : '담화적'; }
 function ymd(x){ return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
 function keyOf(d, mode){ if (mode==='month') return d.slice(0,7); if (mode==='day') return d; const x = new Date(d+'T00:00:00'); x.setDate(x.getDate()-((x.getDay()+6)%7)); return ymd(x); }
@@ -416,7 +433,7 @@ function realBuckets(mode){
     const k = keyOf(e.start_date, mode), c = catOf(e.mid_category);
     if (!map[k]) map[k] = {}; map[k][c] = (map[k][c]||0) + 1; });
   const keys = Object.keys(map).sort(); if (!keys.length) return [];
-  const minN = mode==='day' ? 14 : mode==='week' ? 8 : 6;   // 자료가 적어도 축이 비지 않게 앞쪽을 빈 칸으로 채운다
+  const minN = 1;   // 첫 사건부터 그린다(앞쪽 빈 기간을 채우지 않음)
   let first = keys[0]; const last = keys[keys.length-1];
   let span = 1; for (let k = first; k < last; k = shiftKey(k, mode, 1)) span++;
   for (; span < minN; span++) first = shiftKey(first, mode, -1);
@@ -571,8 +588,8 @@ function bars(sel, key, labels, nameFn){
   $(sel).innerHTML=arr.map(([k,v])=>`<span>${esc(labels?(labels[k]||k):(nameFn?nameFn(k):k))}</span><div class="bar" style="width:${v/max*100}%"></div><span class="v">${v}</span>`).join('');
 }
 // ---- 시각화 (통계 탭·첫 화면 요약)
-const SIDO_TILE = [['서울',1,0],['강원',2,0],['인천',0,1],['경기',1,1],['충북',2,1],['경북',3,1],['충남',0,2],['세종',1,2],['대전',2,2],['대구',3,2],['전북',0,3],['경남',2,3],['울산',3,3],['전남광주',0,4],['부산',3,4],['제주',0,5]];
-const SIDO_SHORT_EN = {'서울':'Seoul','강원':'Gangwon','인천':'Incheon','경기':'Gyeonggi','충북':'Chungbuk','경북':'Gyeongbuk','충남':'Chungnam','세종':'Sejong','대전':'Daejeon','대구':'Daegu','전북':'Jeonbuk','경남':'Gyeongnam','울산':'Ulsan','전남광주':'Jeonnam· Gwangju','부산':'Busan','제주':'Jeju'};
+const SIDO_HEX = [['인천',0,0],['서울',1,0],['경기',2,0],['강원',3,0],['충남',0.5,1],['세종',1.5,1],['충북',2.5,1],['경북',3.5,1],['전북',1,2],['대전',2,2],['대구',3,2],['울산',4,2],['전남광주',1.5,3],['경남',2.5,3],['부산',3.5,3],['제주',1,4.35]];
+const SIDO_SHORT_EN = {'서울':'Seoul','강원':'Gangwon','인천':'Incheon','경기':'Gyeonggi','충북':'Chungbuk','경북':'Gyeongbuk','충남':'Chungnam','세종':'Sejong','대전':'Daejeon','대구':'Daegu','전북':'Jeonbuk','경남':'Gyeongnam','울산':'Ulsan','전남광주':'Jeonnam-G.','부산':'Busan','제주':'Jeju'};
 const CAT_ORDER = ['담화적','시위성','대결적','폭력적','내부동원'];
 const ACT_CAT = {'01':'담화적','02':'담화적','03':'담화적','04':'담화적','05':'담화적','06':'시위성','07':'시위성','08':'시위성','09':'시위성','13':'시위성','10':'대결적','14':'대결적','15':'대결적','11':'폭력적','12':'내부동원'};
 const heatColor = (v, max) => v ? `color-mix(in srgb, var(--mark) ${Math.round(18 + 72 * v / max)}%, var(--panel))` : 'transparent';
@@ -600,8 +617,10 @@ function heat(){
   const issues = Object.keys(tot).sort((a,b)=>tot[b]-tot[a]);
   const max = Math.max(1, ...Object.values(cnt));
   const cats = []; acts.forEach(a => { const c = ACT_CAT[a]; if (cats.length && cats[cats.length-1][0]===c) cats[cats.length-1][1]++; else cats.push([c,1]); });
-  $('#st-heat').innerHTML = `<table class="heat"><thead><tr><th></th>${cats.map(([c,n])=>`<th class="cat" colspan="${n}">${esc(catName(c))}</th>`).join('')}<th></th></tr>
-    <tr><th></th>${acts.map(a=>`<th scope="col" class="v">${esc(AC[a]||a)}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
+  const CAT_SHORT_EN = {'담화적':'Discursive','시위성':'Demonstrative','대결적':'Confront.','폭력적':'Violent','내부동원':'Internal'};
+  const catLab = c => LANG==='en' ? (CAT_SHORT_EN[c]||c) : (c==='내부동원' ? '내부<wbr>동원' : esc(c));
+  $('#st-heat').innerHTML = `<table class="heat"><colgroup><col class="lab">${acts.map(()=>'<col>').join('')}<col class="tot"></colgroup><thead><tr><th></th>${cats.map(([c,n])=>`<th class="cat" colspan="${n}">${catLab(c)}</th>`).join('')}<th></th></tr>
+    <tr><th></th>${acts.map(a=>`<th scope="col" class="v">${esc(AC[a]||a).replace(/·/g,'·<wbr>').replace(/ \/ /g,' /<wbr> ')}</th>`).join('')}<th scope="col" class="v">${tr('합계','Total')}</th></tr></thead><tbody>`
     + issues.map(i => `<tr><th scope="row">${esc(IS[i]||i)}</th>${acts.map(a => { const v = cnt[i+'|'+a]||0;
         return v ? `<td style="background:${heatColor(v,max)};${v/max>.55?'color:#fff':''}"><button type="button" data-i="${esc(i)}" data-a="${esc(a)}" aria-label="${esc((IS[i]||i)+' · '+(AC[a]||a)+' '+v)}">${v}</button></td>` : '<td class="z">0</td>'; }).join('')}<td style="color:var(--muted)">${tot[i]}</td></tr>`).join('') + '</tbody></table>';
 }
@@ -614,19 +633,22 @@ function party(){
 }
 function tilemap(){
   const c = {}; EVENTS.forEach(e => { let s = e.region_sido; if (!s) return; if (s==='광주'||s==='전남') s='전남광주'; c[s]=(c[s]||0)+1; });
-  const max = Math.max(1, ...SIDO_TILE.map(([s])=>c[s]||0)), grid = {};
-  SIDO_TILE.forEach(([s,x,y]) => grid[x+','+y] = s);
-  let html = '<div class="tiles">';
-  for (let y=0; y<6; y++) for (let x=0; x<4; x++) { const s = grid[x+','+y];
-    if (!s) { html += '<span class="blank"></span>'; continue; }
-    const v = c[s]||0, nm = LANG==='en' ? SIDO_SHORT_EN[s] : s;
-    html += v ? `<button type="button" data-s="${esc(s)}" style="background:${heatColor(v,max)}" class="${v/max>.55?'dark':''}" aria-label="${esc(sidoName(s))} ${v}"><span style="all:unset">${esc(nm)}</span><b>${v}</b></button>`
-              : `<span style="color:var(--muted)">${esc(nm)}<b style="font-weight:400">0</b></span>`; }
-  html += '</div>';
+  const max = Math.max(1, ...SIDO_HEX.map(([s])=>c[s]||0));
+  const R = 38, HW = Math.sqrt(3) * R, pad = 4;           // 꼭짓점이 위를 향한 육각형
+  const pts = (cx, cy) => [0,1,2,3,4,5].map(i => { const a = Math.PI/180*(60*i-30); return (cx+R*Math.cos(a)).toFixed(1)+','+(cy+R*Math.sin(a)).toFixed(1); }).join(' ');
+  const W = Math.ceil(4.5*HW + 2*pad + HW/2), H = Math.ceil(4.35*1.5*R + 2*R + 2*pad);
+  let svg = `<svg class="hexmap" viewBox="0 0 ${W} ${H}" role="group" aria-label="${tr('시도별 사건 수 지도','Events by province')}">`;
+  SIDO_HEX.forEach(([s,x,y]) => {
+    const cx = pad + HW/2 + x*HW, cy = pad + R + y*1.5*R, v = c[s]||0, nm = LANG==='en' ? SIDO_SHORT_EN[s] : s;
+    const fill = v ? heatColor(v, max) : 'var(--panel)', dark = v/max > .55;
+    const lab = `<text x="${cx.toFixed(1)}" y="${(cy-3).toFixed(1)}" class="hn${dark?' dk':''}">${esc(nm)}</text><text x="${cx.toFixed(1)}" y="${(cy+14).toFixed(1)}" class="hv${dark?' dk':''}${v?'':' zero'}">${v}</text>`;
+    svg += v ? `<g class="hx" tabindex="0" role="button" data-s="${esc(s)}" aria-label="${esc(sidoName(s))} ${v}"><polygon points="${pts(cx,cy)}" style="fill:${fill}"/>${lab}</g>`
+             : `<g class="hx off"><polygon points="${pts(cx,cy)}" style="fill:${fill}"/>${lab}</g>`;
+  });
+  svg += '</svg>';
   const other = ['온라인','해외','비해당','미상'].filter(s=>c[s]);
-  html += `<div class="other">${other.length ? `<div>${tr('지도에 없는 곳','Not on the map')}</div>` + other.map(s=>`<div>${esc(sidoName(s))} <b style="font-family:var(--mono)">${c[s]}</b></div>`).join('') : ''}
+  $('#st-map').innerHTML = svg + `<div class="other">${other.length ? `<div>${tr('지도에 없는 곳','Not on the map')}</div>` + other.map(s=>`<div>${esc(sidoName(s))} <b style="font-family:var(--mono)">${c[s]}</b></div>`).join('') : ''}
     <div style="margin-top:8px">${tr('비해당: 성명·고소처럼 장소가 의미 없는 행동','Not applicable: statements, legal complaints, etc.')}</div></div>`;
-  $('#st-map').innerHTML = html;
 }
 function topOrgs(){
   const AT = LB('actor'), c = {}, t = {};
@@ -639,14 +661,11 @@ function sizeDow(){
   const SZ = LB('size'), sc = {}; EVENTS.forEach(e => { if (e.size_scale && e.size_scale!=='SX') sc[e.size_scale]=(sc[e.size_scale]||0)+1; });
   const so = ['S1','S2','S3','S4','S5','S0'].filter(k=>sc[k]), smax = Math.max(1, ...so.map(k=>sc[k]));
   $('#st-size').innerHTML = so.map(k=>`<span>${esc(SZ[k]||k)}</span><div class="bar" style="width:${sc[k]/smax*100}%;${k==='S0'?'background:var(--line)':''}"></div><span class="v">${sc[k]}</span>`).join('');
-  const names = LANG==='en' ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : ['월','화','수','목','금','토','일'], dc = [0,0,0,0,0,0,0];
-  EVENTS.forEach(e => { const d = new Date(e.start_date + 'T00:00:00'); if (!isNaN(d)) dc[(d.getDay()+6)%7]++; });
-  const dmax = Math.max(1, ...dc);
-  $('#st-dow').innerHTML = dc.map((v,i)=>`<span>${names[i]}</span><div class="bar" style="width:${v/dmax*100}%"></div><span class="v">${v}</span>`).join('');
 }
 $('#st-heat').addEventListener('click', ev => { const b = ev.target.closest('button[data-i]'); if (b) goEvents(() => { $('#f-issue').value = b.dataset.i; $('#f-action').value = b.dataset.a; }); });
 $('#st-party').addEventListener('click', ev => { const b = ev.target.closest('button[data-p]'); if (b) goEvents(() => { PARTY = b.dataset.p; }); });
-$('#st-map').addEventListener('click', ev => { const b = ev.target.closest('button[data-s]'); if (b) goEvents(() => { $('#f-sido').value = b.dataset.s; }); });
+$('#st-map').addEventListener('click', ev => { const b = ev.target.closest('[data-s]'); if (b) goEvents(() => { $('#f-sido').value = b.dataset.s; }); });
+$('#st-map').addEventListener('keydown', ev => { const b = ev.target.closest('[data-s]'); if (b && (ev.key==='Enter'||ev.key===' ')) { ev.preventDefault(); goEvents(() => { $('#f-sido').value = b.dataset.s; }); } });
 $('#st-org').addEventListener('click', ev => { const b = ev.target.closest('button[data-o]'); if (b) goEvents(() => { ORG = b.dataset.o; }); });
 function stats(){ summary(); heat(); party(); tilemap(); topOrgs(); sizeDow(); bars('#st-action','action_primary',LB('action')); bars('#st-issue','issue_1',LB('issue')); bars('#st-actor','actor_type',LB('actor')); }
 // 언어 전환: 고정 문구는 .l-ko / .l-en 으로 숨기고, 화면에서 만드는 문구는 다시 그린다
